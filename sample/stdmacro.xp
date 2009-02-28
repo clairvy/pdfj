@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<!--
+  stdmacro.xp - XPDFJ標準マクロのデモ
+  2005 <nakajima@netstock.co.jp>
+-->
+<XPDFJ version="0.2">
+
+<!-- ======================= 準備 ======================= -->
+
+<!-- マクロファイルの読み込み -->
+<do file="stddefs.inc"/>
+<do file="toc.inc"/>
+<do file="index.inc"/>
+
+<!-- 見出しの自動番号付けの設定 -->
+<HXNUMBER level="2" number="{H2}."/>
+<HXNUMBER level="3" number="{H2}.{H3} "/>
+<HXNUMBER level="4" number="{H2}.{H3}.{H4} "/>
+
+<!-- 見出しアウトラインの設定 -->
+<HXOUTLINE level="2,3,4"/> <!-- H2～4をアウトラインに -->
+
+<!-- ヘッダのスタイルの設定（内容は見出しで指定） -->
+<HEADER page="odd" pstyle="align:e" hr="b"/>
+<HEADER page="even" pstyle="align:b" hr="b"/>
+
+<!-- フッタにページ番号を出す設定 -->
+<FOOTER page="odd" pstyle="align:e">{page}</FOOTER>
+<FOOTER page="even" pstyle="align:b">{page}</FOOTER>
+
+<!-- ソースコード用の段落をマクロ定義 -->
+<alias tag="CODE" aliasof="P" pstyle="align:b; linefeed:125%; beginpadding:20; preskip:75%; postskip:75%" tstyle="fontsize:9" font="$FontH{gothic}"/>
+
+<!-- 注釈用の段落をマクロ定義 -->
+<alias tag="NOTE" aliasof="P" pstyle="beginpadding:20; labeltext:※; labelsize:10; typename:NOTE; preskip:{default:75%; NOTE:25%}; postskip:{default:75%; NOTE:25%}"/>
+
+<!-- 前後に間隔を取るULをマクロ定義 -->
+<alias tag="SUL" aliasof="UL" pstyle="typename:SUL; preskip:{default:75%; SUL:25%}; postskip:{default:75%; SUL:25%}"/>
+
+<!-- TABLEのデフォルト属性の指定 -->
+<alias tag="TABLE" aliasof="TABLE" cellpadding="3" cellbox="s" tstyle="fontsize:9"/>
+
+<!-- 図表ブロックをマクロ定義 -->
+<def tag="FIG" size="400" align="center" preskip="10" postskip="10">
+  <return>
+    <DIV align="$Args{align}" preskip="$Args{preskip}" 
+      postskip="$Args{postskip}">
+      <DIV width="$Args{size}">$Args{contents}</DIV>
+    </DIV>
+  </return>
+</def>
+
+<!-- 図表キャプションの段落をマクロ定義 -->
+<alias tag="CAPTION" aliasof="P" pstyle="postnobreak:1" tstyle="bold:1"/>
+
+<!-- 図表注釈用の段落をマクロ定義 -->
+<alias tag="FIGNOTE" aliasof="P" pstyle="linefeed:120%; labeltext:※; labelsize:10; typename:FIGNOTE; preskip:{default:25%; FIGNOTE:10%}; postskip:{default:25%; FIGNOTE:10%}"/>
+
+<!-- ======================= 本文 ======================= -->
+<BODY>
+
+<H2 headereven="*" headerodd=" ">はじめに</H2>
+
+<P>
+　XPDFJは、PDFを生成するPerlモジュールPDFJの、XMLフロントエンドです。XML形式で書いた原稿からPDFを生成することができます。
+　XPDFJの基本機能は、PDFJの各種の命令をXML形式で書けるようにすることですが、それだけであればPDFJを直接使ったPerlスクリプトを書くのをより面倒にしただけです。XPDFJには一連の命令をまとめて新たな命令を定義できるマクロ機能が用意されており、これによってより簡潔な原稿からPDFを生成することができるようになります。
+　この文書は、XPDFJの標準マクロであるstddefs.inc、toc.inc、index.incの三つのマクロファイルを使った文書作成の基本を、デモを兼ねて説明するものです。この文書自体がこれらの標準マクロを使って作成されていますので、原稿テキストであるstdmacro.xpを実例としてご覧いただくと理解が深まるかと思います。
+</P>
+
+<NOTE>
+XPDFJの標準マクロはHTMLに慣れた方が使いやすいようにHTMLライクに作られていますが、HTMLのタグ名と同じ名前のマクロでも属性に違いがある場合がほとんどで、互換性はありません。XPDFJの標準マクロの属性は、PDFJの機能に由来しているものが多くあります。標準マクロを十分使いこなすためにはPDFJの機能を理解していただくことが不可欠となりますので、PDFJの説明書を併せてご覧いただくようお願いします。
+</NOTE>
+
+</BODY>
+
+<BODY>
+
+<H2 headereven="*" headerodd=" ">原稿の基本パターン</H2>
+
+<H3 headerodd="*">原稿の基本パターン</H3>
+
+<P>
+　XPDFJの標準マクロを使った文書原稿の基本パターンは次のようになります。まず目次も索引もない簡単な文書の場合です。フッタにページ番号だけは出すようにしています。
+　先頭行のxml宣言で、文字コードを正しく指定する必要があります。Windowsの<INDEX reading="しふとじす" term="シフトJIS"/>シフトJISの場合は"x-sjis-cp932"、<INDEX reading="にほんごEUC" term="日本語EUC"/>日本語<INDEX term="EUC"/>EUCの場合は"x-euc-jp-jisx0221"を指定します。
+　xml宣言の後で、必ず全体を<![CDATA[<XPDFJ>…</XPDFJ>]]>で囲まねばなりません。
+</P>
+
+<CODE><![CDATA[
+<?xml version="1.0" encoding="x-sjis-cp932"?> <!-- 文字コードを指定する -->
+<XPDFJ version="0.2">
+<do file="stddefs.inc"/> <!-- 標準マクロファイルの読み込み -->
+<FOOTER page="all" pstyle="align:m">{page}</FOOTER> <!-- フッタにページ番号 -->
+<BODY>
+　…ここに本文を書く…
+</BODY>
+<print file="$Args{outfile}"/> <!-- 原稿ファイル名に.pdfを付加した名前で出力 -->
+</XPDFJ>
+]]></CODE>
+
+<P>
+　表紙、目次、本文、索引を持った文書の場合は、次のようになります。表紙と目次は最後に挿入していることに注意してください。本文を作った後でないと目次が作れないからです。
+</P>
+
+<CODE><![CDATA[
+<?xml version="1.0" encoding="x-sjis-cp932"?> <!-- 文字コードを指定する -->
+<XPDFJ version="0.2">
+<do file="stddefs.inc"/> <!-- 標準マクロファイルの読み込み -->
+<do file="toc.inc"/> <!-- 目次用マクロファイルの読み込み -->
+<do file="index.inc"/> <!-- 索引用マクロファイルの読み込み -->
+<HXOUTLINE/> <!-- 見出しのアウトライン化の指定 -->
+<FOOTER page="all" pstyle="align:m">{page}</FOOTER> <!-- フッタにページ番号 -->
+<BODY>
+　…ここに本文を書く…
+</BODY>
+<BODY cols="3"> <!-- 索引は３段組で -->
+　<H2>索引</H2>
+　<MAKEINDEX/> <!-- 索引 -->
+</BODY>
+<FOOTER page="all" clear="1"/> <!-- 表紙と目次はフッタのページ番号はなし -->
+<BODY page="1" evenpages="1"> <!-- 表紙と目次は先頭へ挿入し複数ページとする -->
+　…ここに表紙の内容を書く…
+　<TOC/> <!-- 目次 -->
+</BODY>
+<print file="$Args{outfile}"/> <!-- 原稿ファイル名に.pdfを付加した名前で出力 -->
+</XPDFJ>
+]]></CODE>
+
+<H3 headerodd="*">XMLの書き方</H3>
+
+<P>
+　XMLの書式の詳しいことはXMLの解説本をご覧いただくとして、ここではとりあえずこれだけ注意すれば書けるというポイントに絞って説明しておきます。
+</P>
+
+<SUL>
+<MLI><![CDATA[
+先頭には必ず <?xml version="1.0" encoding="…"?> を書かねばなりません。原稿の文字コードと指定したencodingが合わないとエラーになります。
+大文字小文字は区別されます。<BODY>を<Body>と書いたりしてはダメです。特にHTMLに慣れた方は注意してください。
+]]></MLI>
+<LI><![CDATA[<XXX…>]]>が<INDEX reading="かいしたぐ" term="開始タグ"/>開始<INDEX reading="たぐ" term="タグ"/>タグ、<![CDATA[</XXX>]]>が<INDEX reading="しゅうりょうたぐ" term="終了タグ"/>終了タグで、入れ子になっても構いませんが、開始タグと終了タグがきちんと対応するように注意してください。<![CDATA[<XXX…></XXX>と内容がない場合は<XXX…/>と書くことができます。HTMLのように<P>だけ書いて</P>を書かないのはダメですし、<BR>は<BR/>と書かねばなりません。]]></LI>
+<LI>開始タグの中の「名前="値"」あるいは「名前='値'」を<INDEX reading="ぞくせい" term="属性"/>属性と言います。</LI>
+<MLI><![CDATA[タグを書くため以外に < や > を書くときは、&lt; &gt; とします。その他、& は &amp;、' は &apos; " は &quot; と書けます。
+< や > をたくさん含むようなテキストを書くときに一つ一つ &lt; などと書くのが面倒なら、<![CDATA[ と]]> ]]&gt; で囲むとそのまま書けます。</MLI>
+<LI><![CDATA[<!-- から --> ]]>までは<INDEX reading="こめんと" term="コメント"/>コメントになります。コメント中には -- という文字列は入れらないので、コメントは入れ子にはできません。</LI>
+</SUL>
+
+</BODY>
+
+<BODY>
+
+<H2 headereven="*" headerodd=" ">原稿の書き方</H2>
+
+<H3 headerodd="*">stddefs.incの読み込み</H3>
+
+<P>
+　<![CDATA[<do file="stddefs.inc"/>]]>で、標準マクロファイルstddefs.incを読み込むと、それ以降でこのマクロファイルで定義された各種のマクロが使えるようになります。このとき、文書の各種のパラメータが次のように設定されます。単位は<INDEX reading="ぽいんと" term="ポイント"/>ポイント（1ポイント＝1/72インチ）、パーセントはフォントサイズに対する比率です。つまりこれは<INDEX term="A4"/>A4用紙に周囲の余白を1インチ取り、本文フォント10ポイントで行送り15ポイントということになります。
+　linefeedは行送りであって<INDEX reading="ぎょうかん" term="行間"/>行間ではないことに注意してください。linefeedが150%なら行間は50%ということになります。
+</P>
+
+<FIG size="360">
+<CAPTION>【表：stddefs.incの属性と省略時設定】</CAPTION>
+<TABLE cellwidth="100,60,200">
+<TR postnobreak="1"><TH>属性名</TH><TH>省略時値</TH><TH>意味</TH></TR>
+<TR><TD>pagewidth</TD><TD>595</TD><TD><INDEX reading="ぺーじはば" term="ページ幅"/>ページ幅</TD></TR>
+<TR><TD>pageheight</TD><TD>842</TD><TD><INDEX reading="ぺーじたかさ" term="ページ高さ"/>ページ高さ</TD></TR>
+<TR><TD>leftmargin</TD><TD>72</TD><TD>左余白</TD></TR>
+<TR><TD>rightmargin</TD><TD>72</TD><TD>右余白</TD></TR>
+<TR><TD>topmargin</TD><TD>72</TD><TD>上余白</TD></TR>
+<TR><TD>bottommargin</TD><TD>72</TD><TD>下余白</TD></TR>
+<TR><TD>fontsize</TD><TD>10</TD><TD>本文<INDEX reading="ふぉんとさいず" term="フォントサイズ"/>フォントサイズ</TD></TR>
+<TR><TD>linefeed</TD><TD>150%</TD><TD>本文<INDEX reading="ぎょうおくり" term="行送り"/>行送り</TD></TR>
+</TABLE>
+</FIG>
+
+<P>
+　これを例えば、<INDEX term="B5"/>B5の用紙で余白1.5cm、フォントは9ポイントとしたければ、
+</P>
+
+<CODE><![CDATA[
+  <do file="stddefs.inc" pagewidth="516" pageheight="728" 
+  margin="42" fontsize="9"/>
+]]></CODE>
+
+<P>
+とすれば良いわけです。margin属性を指定すると、上下左右の余白がすべてその値に設定されます。もちろん各margin属性で個別に指定することもできます。なお、通常は横書き用のフォントのみが設定されます。縦書き用のフォントを設定する方法も用意されていますが、ここでは扱いません。
+</P>
+
+<H3 headerodd="*">本文</H3>
+
+<H4>本文を囲む<![CDATA[<BODY>]]></H4>
+
+<P>
+　前述の基本パターンのように、本文全体は<INDEX reading="BODY" term="&lt;BODY&gt;"/><![CDATA[<BODY>]]>で囲みます。HTMLと違い、<![CDATA[<BODY>]]>の中に直接文字を書くことはできず、後述する<![CDATA[<H*><P><UL><OL><TABLE>]]>などが<![CDATA[<BODY>]]>の内容になることに注意してください。<![CDATA[<BODY>]]>は何度書いても構いませんが、各<![CDATA[<BODY>]]>は新しいページから始まることに注意してください。
+　<![CDATA[<BODY cols="2">]]>のようにcols属性を指定すると２<INDEX reading="だんぐみ" term="段組"/>段組や３段組にすることもできます。<INDEX reading="だんかん" term="段間"/>段間（段と段の間隔）はデフォルトでは20ポイントですが、<![CDATA[<BODY cols="3" colskip="15">]]>のようにcolskip属性で変更できます。
+　通常は<![CDATA[<BODY>]]>による新しいページは末尾に追加されていきますが、<![CDATA[<BODY page="1">]]>のようにすると指定のページ番号の位置へ挿入できます。ただし<INDEX reading="ぺーじのそうにゅう" term="ページの挿入"/>ページの挿入をおこなうとそれ以降のページ番号がずれることに注意してください。この機能は後述する表紙や目次で使います。
+　次に<![CDATA[<BODY>]]>の属性をあげておきます。
+</P>
+
+<FIG>
+<CAPTION>【表：<![CDATA[<BODY>]]>の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR><TD>page</TD><TD>開始ページ番号（この位置にページを挿入。省略すると末尾に追加）</TD></TR>
+<TR><TD>hfpage</TD><TD>ヘッダやフッタに表示するページ番号の開始値（省略するとpageと同じ）</TD></TR>
+<TR><TD>cols</TD><TD>段数（省略時値1）</TD></TR>
+<TR><TD>colskip</TD><TD>段間（省略時値20）</TD></TR>
+<TR><TD>evenpages</TD><TD>真ならページ数が偶数になるように空ページが付加される</TD></TR>
+</TABLE>
+</FIG>
+
+<NOTE>
+表に「真なら」とありますが、0と空文字列以外は真と判断されます。普通は1を指定します。以下でも同様です。
+</NOTE>
+
+<H4>見出し</H4>
+
+<P>
+　<INDEX reading="みだし" term="見出し"/>見出しは、<![CDATA[<H1>表題</H1>]]> のように<INDEX reading="H1" term="&lt;H1&gt;"/>&lt;H1&gt;<INDEX reading="H2" term="&lt;H2&gt;"/>&lt;H2&gt;<INDEX reading="H3" term="&lt;H3&gt;"/>&lt;H3&gt;<INDEX reading="H4" term="&lt;H4&gt;"/>&lt;H4&gt;の４種類のタグで囲んで書きます。（以下の説明でH1～H4を総称してH*と書くことにします。）<![CDATA[<H1>]]>は<INDEX reading="ぶんしょのひょうだい" term="文書の表題"/>文書の表題用で、大きなフォントで中央寄せされます。<![CDATA[<H2><H3><H4>]]>はそれぞれ、<INDEX reading="おおみだし" term="大見出し"/>大見出し、<INDEX reading="ちゅうみだし" term="中見出し"/>中見出し、<INDEX reading="こみだし" term="小見出し"/>小見出しです。
+　見出しに「1.大見出し」「1.1 中見出し」「1.1.1 小見出し」のように自動番号付けをしたい場合は、<INDEX reading="HXNUMBER" term="&lt;HXNUMBER&gt;"/><![CDATA[<HXNUMBER>]]>を使って<![CDATA[<BODY>]]>の前に次のように書きます。
+</P>
+
+<CODE>
+<![CDATA[<HXNUMBER level="2" number="{H2}."/>
+<HXNUMBER level="3" number="{H2}.{H3} "/>
+<HXNUMBER level="4" number="{H2}.{H3}.{H4} "/>]]>
+</CODE>
+
+<P>
+number属性で指定した文字列中の{H*}が対応するH*が何番目かという番号に置き換えられて、見出しの前に付加されます。<![CDATA[<H*>]]>の属性でnonumber="1"と指定するとその見出しには自動番号付けはされず、カウントもされません。
+　見出しをアウトライン（しおり）にしたい場合は、<INDEX reading="HXOUTLINE" term="&lt;HXOUTLINE&gt;"/><![CDATA[<HXOUTLINE/>]]>を<![CDATA[<BODY>]]>の前に書きます。デフォルトでは<![CDATA[<H2><H3>]]>がアウトライン化されます。<![CDATA[<H4>]]>もしたければ、<![CDATA[<HXOUTLINE level="2,3,4"/>]]>と指定します。
+　つぎに<![CDATA[<H*><HXNUMBER><HXOUTLINE>]]>の属性をあげておきます。
+</P>
+
+<FIG>
+<CAPTION>【表：<![CDATA[<H*><HXNUMBER><HXOUTLINE>]]>の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<H*>]]></B></TD></TR>
+<TR><TD>nooutline</TD><TD>真ならアウトラインにしない</TD></TR>
+<TR><TD>nonumber</TD><TD>真なら自動番号付しない（カウントもしない）</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（標準設定を元に一時変更）</TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（標準設定を元に一時変更）</TD></TR>
+<TR><TD>alt</TD><TD>マクロ名（このマクロを呼び出した結果を見出しとする）</TD></TR>
+<TR><TD>header</TD><TD>ヘッダ文字列（一時変更）</TD></TR>
+<TR><TD>headerall</TD><TD>ヘッダ文字列（以降の全ページ）</TD></TR>
+<TR><TD>headereven</TD><TD>ヘッダ文字列（以降の偶数ページ）</TD></TR>
+<TR><TD>headerodd</TD><TD>ヘッダ文字列（以降の奇数ページ）</TD></TR>
+<TR><TD>footer</TD><TD>フッタ文字列（一時変更）</TD></TR>
+<TR><TD>footerall</TD><TD>フッタ文字列（以降の全ページ）</TD></TR>
+<TR><TD>footereven</TD><TD>フッタ文字列（以降の偶数ページ）</TD></TR>
+<TR><TD>footerodd</TD><TD>フッタ文字列（以降の奇数ページ）</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<HXNUMBER>]]></B></TD></TR>
+<TR><TD>level</TD><TD>対象のH*の番号</TD></TR>
+<TR><TD>number</TD><TD>番号文字列（{H*}が何番目のH*かを表す）</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<HXOUTLINE>]]></B></TD></TR>
+<TR><TD>level</TD><TD>アウトラインにする番号をカンマ区切りで（省略すると2,3）</TD></TR>
+</TABLE>
+<FIGNOTE>altを指定するとそのマクロには見出しテキストオブジェクト（アウトラインや番号付けの処理がされた）がtext属性を通じて渡される</FIGNOTE>
+<FIGNOTE>H*のheader*やfooter*に'*'を指定すると内容のテキストと同じ</FIGNOTE>
+</FIG>
+
+<P></P>
+
+<P>
+　pstyle属性、tstyle属性を指定することで、stddefs.incでの標準設定を変更できます。例えば、&lt;H3 tstyle="withline:1"&gt;なんたら&lt;/H3&gt; とすれば「なんたら」という中見出しに下線を付けることができます。この一回だけでなく、以後の&lt;H3&gt;にすべて下線を付けたい場合は、&lt;H3 tstyle="withline:1"/&gt;とします。このように内容のない&lt;H*&gt;は、それ自体は見出しを作らず、pstyle、tstyle、font、altの設定を保存しておいて以後その設定を使うように指示する働きをします。
+</P>
+
+<NOTE>
+alt属性を使うと、ユーザーが定義した独自マクロによってより凝ったレイアウトの見出しが実現できますが、ここでは省略します。
+</NOTE>
+
+<H4>通常の段落</H4>
+
+<P>
+　通常の<INDEX reading="だんらく" term="段落"/>段落は<INDEX reading="P" term="&lt;P&gt;"/><![CDATA[<P>]]>で囲みます。<![CDATA[<P>]]>の内容のテキストではHTMLと違って、改行が改行として生きます。ただし、タグの前後の改行は無視されます。これは<![CDATA[<P>]]>に限らず多くのタグに共通するXPDFJの特徴です。また、<![CDATA[<BR/>]]>で改行を入れることもできます。次の三つの例はすべて同じ結果になります。
+</P>
+
+<CODE>
+<![CDATA[<P>なんたら<BR/>かんたら</P>]]>
+</CODE>
+
+<CODE>
+<![CDATA[<P>なんたら
+かんたら</P>]]>
+</CODE>
+
+<CODE>
+<![CDATA[<P>
+なんたら
+かんたら
+</P>]]>
+</CODE>
+
+<P>
+　また、<![CDATA[<P>]]>などの内容のテキストでは行頭の半角スペースは無視されます。これによって、次のように書いてタグの入れ子関係をわかりやすくすることができます。その代わり、半角スペースで行を<INDEX reading="じさげ" term="字下げ"/>字下げすることはできません。簡易的に字下げしたい場合は全角スペースを使ってください。長い行を折り返しても行頭が揃うように字下げしたい場合は、段落スタイルbeginindentを使います。
+</P>
+
+<CODE>
+<![CDATA[<P>
+　なんたら
+　かんたら
+</P>]]>
+</CODE>
+
+<H4>文字の修飾</H4>
+
+<P>
+　<INDEX reading="もじのしゅうしょく" term="文字の修飾"/>文字の修飾のうち、<INDEX reading="ふとじ" term="太字"/>太字、<INDEX reading="しゃたい" term="斜体"/>斜体、<INDEX reading="かせん" term="下線"/>下線、<INDEX reading="うわつき" term="上付き"/>上付き、<INDEX reading="したつき" term="下付き"/>下付き、についてはそれぞれ<INDEX reading="B" term="&lt;B&gt;"/>&lt;B&gt;<INDEX reading="I" term="&lt;I&gt;"/>&lt;I&gt;<INDEX reading="U" term="&lt;U&gt;"/>&lt;U&gt;<INDEX reading="SUP" term="&lt;SUP&gt;"/>&lt;SUP&gt;<INDEX reading="SUB" term="&lt;SUB&gt;"/>&lt;SUB&gt;でできますが、PDFJには他にもいくつかの文字修飾の方法が用意されており、それは<INDEX reading="S" term="&lt;S&gt;"/><![CDATA[<S>]]>の属性によってテキストスタイルを指定することでおこないます（<![CDATA[<S>]]>はHTMLでは取消線ですがXPDFJではテキストスタイルを与えるのに使います）。属性は複数指定することができます。主なテキストスタイルとそこで使われる図形スタイルは次のようになります。
+</P>
+
+<FIG>
+<CAPTION>【表：<INDEX reading="てきすとすたいる" term="テキストスタイル"/>テキストスタイルの主なもの】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>スタイル名</TH><TH>値と機能</TH></TR>
+<TR><TD>fontsize</TD><TD><INDEX reading="ふぉんとさいず" term="フォントサイズ"/>フォントサイズ</TD></TR>
+<TR><TD>italic</TD><TD>真なら<INDEX reading="しゃたい" term="斜体"/>斜体</TD></TR>
+<TR><TD>bold</TD><TD>真なら<INDEX reading="ふとじ" term="太字"/>太字</TD></TR>
+<TR><TD>ruby</TD><TD><INDEX reading="るび" term="ルビ"/>ルビ文字列</TD></TR>
+<TR><TD>shapestyle</TD><TD>文字描画の図形スタイル</TD></TR>
+<TR><TD>withline</TD><TD>真なら<INDEX reading="かせん" term="下線"/>下線あり</TD></TR>
+<TR><TD>withlinestyle</TD><TD>下線の図形スタイル</TD></TR>
+<TR><TD>withbox</TD><TD><INDEX reading="かこみわく" term="囲み枠"/>囲み枠。s:枠線、f:塗りつぶし、sf:枠線＋塗りつぶし
+sの代わりに l:左辺、r:右辺、t:上辺、b:下辺 の組み合わせも可
+rX:（Xは数値）角を半径Xで丸くする</TD></TR>
+<TR><TD>withboxstyle</TD><TD>囲み枠の図形スタイル</TD></TR>
+<TR><TD>withdot</TD><TD>真なら<INDEX reading="けんてん" term="圏点"/>圏点あり（圏点とは文字の上に点を付けて強調するもの）</TD></TR>
+</TABLE>
+<FIGNOTE>図形スタイルを省略すると枠線色塗りつぶし色とも黒、線幅1、実線</FIGNOTE>
+</FIG>
+
+<FIG>
+<CAPTION>【表：<INDEX reading="ずけいすたいる" term="図形スタイル"/>図形スタイル】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>スタイル名</TH><TH>値と機能</TH></TR>
+<TR><TD>fillcolor</TD><TD><INDEX reading="ぬりつぶししょく" term="塗りつぶし色"/>塗りつぶし色</TD></TR>
+<TR><TD>strokecolor</TD><TD><INDEX reading="せんしょく" term="線色"/>線色</TD></TR>
+<TR><TD>linewidth</TD><TD><INDEX reading="せんはば" term="線幅"/>線幅</TD></TR>
+<TR><TD>linedash</TD><TD><INDEX reading="はせん" term="破線"/>破線パターン「オン幅,オフ幅,開始オフセット」</TD></TR>
+</TABLE>
+<FIGNOTE>色は「#RRGGBB」（16進）または0（黒）から1（白）の間の数値</FIGNOTE>
+<FIGNOTE>破線パターンを指定しなければ実線</FIGNOTE>
+<FIGNOTE>破線パターンの開始オフセットは省略可</FIGNOTE>
+</FIG>
+
+<P></P>
+
+<P>
+　表だけではわかりにくいものもありますので、実例をいくつか挙げておきましょう。属性の値でスタイルを指定するときは、「スタイル名:値」を「;」区切りで並べます。なお、フォントを切り替える方法は後述します。
+</P>
+
+<SUL><MLI>
+文字を赤くする<BR/><![CDATA[<S shapestyle="fillcolor:#FF0000">赤文字</S>]]>
+灰色で網掛けして白文字に<BR/><![CDATA[<S shapestyle="fillcolor:1" withbox="f" withboxstyle="fillcolor:0.5">白抜き</S>]]>
+点線の下線<BR/><![CDATA[<S withline="1" withlinestyle="linedash:2,2">点線下線</S>]]>
+ルビ<BR/><![CDATA[<S ruby="あじさい">紫陽花</S>]]>
+</MLI></SUL>
+
+<H4>段落の体裁</H4>
+
+<P>
+　<![CDATA[<P>]]>の属性によって段落の体裁を指定できます。次の表に属性を示します。いくつか具体例を挙げておきます。
+</P>
+
+<FIG>
+<CAPTION>【表：<![CDATA[<P>]]>の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>align</TD><TD>b,left:<INDEX reading="ひだりよせ" term="左寄せ"/>左寄せ、m,center:<INDEX reading="ちゅうおうよせ" term="中央寄せ"/>中央寄せ、e,right:<INDEX reading="みぎよせ" term="右寄せ"/>右寄せ、w:<INDEX reading="りょうたんよせ" term="両端寄せ"/>両端寄せ</TD></TR>
+<TR><TD>font</TD><TD>フォントの一時変更</TD></TR>
+<TR><TD>foreachline</TD><TD>真なら内容の各行をそれぞれ段落とする</TD></TR>
+</TABLE>
+<FIGNOTE>align属性の指定はpstyle属性でalignスタイルを指定するのと同じ</FIGNOTE>
+<FIGNOTE>font属性については後述のフォントの項を参照</FIGNOTE>
+</FIG>
+
+<FIG>
+<CAPTION>【表：<INDEX reading="だんらくすたいる" term="段落スタイル"/>段落スタイルの主なもの】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>スタイル名</TH><TH>値と機能</TH></TR>
+<TR><TD>size</TD><TD>段落の行方向のサイズ</TD></TR>
+<TR><TD>align</TD><TD>揃え（b:行頭揃え m:中央揃え e:行末揃え w:両端揃え W:強制両端揃え）</TD></TR>
+<TR><TD>linefeed</TD><TD>行送り</TD></TR>
+<TR><TD>preskip</TD><TD>段落前の間隔</TD></TR>
+<TR><TD>postskip</TD><TD>段落後の間隔</TD></TR>
+<TR><TD>beginindent</TD><TD>行頭インデント</TD></TR>
+<TR><TD>endindent</TD><TD>行末インデント</TD></TR>
+<TR><TD>nobreak</TD><TD>真なら分割されない</TD></TR>
+<TR><TD>postnobreak</TD><TD>真ならその後ろで分割されない</TD></TR>
+<TR><TD>typename</TD><TD>タイプ名</TD></TR>
+</TABLE>
+</FIG>
+
+<P></P>
+
+<SUL><MLI>
+中央寄せ<BR/><![CDATA[<P align="center">…</P>]]>
+フォントサイズを8ポイントにして20ポイント下げる<BR/><![CDATA[<P pstyle="beginindent:20" tstyle="fontsize:8">…</P>]]>
+右寄せで行間を詰め、段落前後の間隔を広く<BR/><![CDATA[<P pstyle="align:e; linefeed=120%; preskip:10; postskip:10">…</P>]]>
+</MLI></SUL>
+
+<H4>フォント</H4>
+
+<P>
+　stddefs.incを読み込むと自動的にstdfontsH.incという横書用<INDEX reading="ふぉんと" term="フォント"/>フォント定義をしたマクロファイルも読み込まれます。その中では次のようなフォントオブジェクトが変数にセットされていて、<![CDATA[<P><LI><DD><TABLE><TR><TD>]]>の属性で font="$FontH{gothic}" のように指定することができます。
+</P>
+
+<FIG>
+<CAPTION>【表：stdfontsH.incのセットするフォント】</CAPTION>
+<TABLE cellwidth="120,280">
+<TR postnobreak="1"><TH>変数名</TH><TH>セットされたフォントオブジェクトの内容</TH></TR>
+<TR><TD>$FontH{<Null/>mincho}</TD><TD>和文欧文ともRyumin-Light（欧文は<INDEX reading="はんかくこていぴっち" term="半角固定ピッチ"/>半角固定ピッチ）
+italic指定 → Ryumin-Lightを傾ける
+bold指定 → GothicBBB-Medium
+italic＋bold指定 → GothicBBB-Mediumを傾ける
+</TD></TR>
+<TR><TD>$FontH{<Null/>mincho_times}</TD><TD>和文Ryumin-Light、欧文Times-Roman
+italic指定 → 和文はRyumin-Lightを傾ける、欧文Times-Italic
+bold指定 → 和文GothicBBB-Medium、欧文Times-Bold
+italic＋bold指定 → 和文はGothicBBB-Mediumを傾ける、欧文Times-BoldItalic
+</TD></TR>
+<TR><TD>$FontH{<Null/>gothic}</TD><TD>和文欧文ともGothicBBB-Medium（欧文は半角固定ピッチ）
+italic指定 → GothicBBB-Mediumを傾ける
+bold指定 → GothicBBB-Medium
+italic＋bold指定 → GothicBBB-Mediumを傾ける
+</TD></TR>
+<TR><TD>$FontH{<Null/>gothic_helvetica}</TD><TD>和文GothicBBB-Medium、欧文Helvetica
+italic指定 → 和文はGothicBBB-Mediumを傾ける、欧文Helvetica-Oblique
+bold指定 → 和文GothicBBB-Medium、欧文Helvetica-Bold
+italic＋bold指定 → 和文はGothicBBB-Mediumを傾ける、欧文Helvetica-BoldOblique
+</TD></TR>
+</TABLE>
+</FIG>
+
+<NOTE>
+表からわかるように、$FontH{gothic}に対してbold指定しても効果がありません。PDFJには任意のTrueTypeフォントを使用する機能があり、これを使えばより太いゴシックにするようなことも可能ですが、ここでは省略します。
+</NOTE>
+
+<H4>箇条書き</H4>
+
+<P>
+　HTMLと同様、<INDEX reading="UL" term="&lt;UL&gt;"/>&lt;UL&gt;<INDEX reading="LI" term="&lt;LI&gt;"/>&lt;LI&gt;で<INDEX reading="きごうつきかじょうがき" term="記号付き箇条書き"/>記号付き<INDEX reading="かじょうがき" term="箇条書き"/>箇条書きが、<INDEX reading="OL" term="&lt;OL&gt;"/>&lt;OL&gt;&lt;LI&gt;で<INDEX reading="ばんごうつきかじょうがき" term="番号付き箇条書き"/>番号付き箇条書きが、<INDEX reading="DL" term="&lt;DL&gt;"/>&lt;DL&gt;<INDEX reading="DT" term="&lt;DT&gt;"/>&lt;DT&gt;<INDEX reading="DD" term="&lt;DD&gt;"/>&lt;DD&gt;で<INDEX reading="ごくせつめいかじょうがき" term="語句説明箇条書き"/>語句説明箇条書きができます。ただし、属性の指定がかなり違います。次に属性の一覧を示します。なお、入れ子にしてもレベルによってULの<INDEX reading="らべる" term="ラベル"/>ラベルの記号が自動的に変わるような機能はなく、label属性で自分でラベルを指定する必要があります。
+</P>
+
+<FIG>
+<CAPTION>【表：箇条書きの属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR><TH postnobreak="1">属性名</TH><TH>値と機能</TH></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<UL>]]></B></TD></TR>
+<TR><TD>label</TD><TD>ラベル文字列（省略すると「・」）</TD></TR>
+<TR><TD>labelsize</TD><TD>二行目以降の字下げ（省略すると本文フォントサイズに同じ）</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>indent</TD><TD>全体の字下げ</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<OL>]]></B></TD></TR>
+<TR><TD>label</TD><TD>ラベル初期値（半角英数字、省略すると「1」）
+「-」を指定すると前回の<![CDATA[<OL>]]>から引き継ぐ</TD></TR>
+<TR><TD>prelabel</TD><TD>ラベルの前置文字列</TD></TR>
+<TR><TD>postlabel</TD><TD>ラベルの後置文字列（省略すると「.」）</TD></TR>
+<TR><TD>labelsize</TD><TD>二行目以降の字下げ（省略すると本文フォントサイズに同じ）</TD></TR>
+<TR><TD>indent</TD><TD>全体の字下げ</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<DL>]]></B></TD></TR>
+<TR><TD>labelsize</TD><TD>二行目以降の字下げ（省略すると本文フォントサイズの倍）</TD></TR>
+<TR><TD>labelskip</TD><TD>語句と本体の間隔（省略すると本文フォントサイズに同じ）</TD></TR>
+<TR><TD>indent</TD><TD>全体の字下げ</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<LI>]]></B></TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>font</TD><TD>フォントの一時変更</TD></TR>
+<TR><TD>foreachline</TD><TD>真なら内容の各行をそれぞれ段落とする</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<DD>]]></B></TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>font</TD><TD>フォントの一時変更</TD></TR>
+</TABLE>
+</FIG>
+
+<P>
+<![CDATA[　注意していただきたいのは、箇条書きを入れ子にするときは、<LI>や<DD>の中に次の箇条書きを入れるのではなく、同列に入れるということです。<P>も<LI>や<DD>と同列に入れると<LI>や<DD>の二行目以降と同じ字下げが適用されます。例えば次のようになります。]]>
+</P>
+
+<CODE><![CDATA[
+<OL>
+　<LI>外側の箇条書き１</LI>
+　<P>外側の箇条書き１の続き</P>
+　<OL label="a">
+　　<LI>内側の箇条書き１</LI>
+　　<LI>内側の箇条書き２</LI>
+　</OL>
+　<LI>外側の箇条書き２</LI>
+</OL>
+]]></CODE>
+
+<P>
+これを処理すると、次のようになります。今のところ、HTMLとは違って箇条書きを入れ子にしてもその深さに応じて自動的にラベルの記号や番号が変化したりはしません。label属性で一々指定してやる必要があります。
+</P>
+
+<P></P>
+
+<OL indent="20">
+  <LI>外側の箇条書き１</LI>
+  <P>外側の箇条書き１の続き</P>
+  <OL label="a">
+    <LI>内側の箇条書き１</LI>
+    <LI>内側の箇条書き２</LI>
+  </OL>
+  <LI>外側の箇条書き２</LI>
+</OL>
+
+<P></P>
+
+<P>
+　箇条書きの時に一行ずつに<![CDATA[<LI>と</LI>]]>を書くのは面倒です。<![CDATA[<LI foreachline="1">]]>とすると、その内容は一行ずつが<![CDATA[<LI>]]>で囲まれているものと見なされます。これは便利なので、代わりに<INDEX reading="MLI" term="&lt;MLI&gt;"/><![CDATA[<MLI>]]>と書けるようになっています。例えば次のように書くと「なんたら」「かんたら」がそれぞれ箇条書きになります。
+</P>
+
+<CODE><![CDATA[
+<OL><MLI>
+なんたら
+かんたら
+</MLI></OL>
+]]></CODE>
+
+<H4>表</H4>
+
+<P>
+　<INDEX reading="ひょう" term="表"/>表の作成もHTMLと同様に<INDEX reading="TABLE" term="&lt;TABLE&gt;"/>&lt;TABLE&gt;<INDEX reading="TR" term="&lt;TR&gt;"/>&lt;TR&gt;<INDEX reading="TH" term="&lt;TH&gt;"/>&lt;TH&gt;<INDEX reading="TD" term="&lt;TD&gt;"/>&lt;TD&gt;でできますが、これも属性はかなり違います。次に属性を示します。
+</P>
+
+<FIG>
+<CAPTION>【表：表の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<TABLE>]]></B></TD></TR>
+<TR><TD>cellwidth</TD><TD><INDEX reading="せるはば" term="セル幅"/>セル幅（カンマ区切りで列毎に指定、省略すると200）</TD></TR>
+<TR><TD>cellpadding</TD><TD><INDEX reading="せるないよはく" term="セル内余白"/>セル内余白</TD></TR>
+<TR><TD>cellbox</TD><TD><INDEX reading="せるわくせん" term="セル枠線"/>セル枠線。s:枠線、f:塗りつぶし、sf:枠線＋塗りつぶし
+sの代わりに l:左辺、r:右辺、t:上辺、b:下辺 の組み合わせも可
+rX:（Xは数値）角を半径Xで丸くする
+（カンマ区切りで列毎に指定）</TD></TR>
+<TR><TD>cellboxstyle</TD><TD>セル枠線の図形スタイル（省略すると「linewidth:0.25」）</TD></TR>
+<TR><TD>align</TD><TD>セル内配置。left,center,right
+（カンマ区切りで列毎に指定）</TD></TR>
+<TR><TD>valign</TD><TD>セル内縦配置。top,middle,bottom
+（カンマ区切りで列毎に指定）</TD></TR>
+<TR><TD>tablebox</TD><TD>表枠線。指定方法はcellboxと同じ</TD></TR>
+<TR><TD>tableboxstyle</TD><TD>表枠線の図形スタイル（省略すると「linewidth:0.25」）</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（THやTDに渡される）</TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（THやTDに渡される）</TD></TR>
+<TR><TD>font</TD><TD>フォントの一時変更（THやTDに渡される）</TD></TR>
+<TR><TD>preskip</TD><TD>表の前間隔</TD></TR>
+<TR><TD>postskip</TD><TD>表の後間隔</TD></TR>
+<TR><TD>indent</TD><TD>表の行頭側のインデント</TD></TR>
+<TR><TD>postnobreak</TD><TD>真なら表の後でページ分割しない</TD></TR>
+<TR><TD>nobreak</TD><TD>真ならページ分割しない</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<TR>]]></B></TD></TR>
+<TR><TD>cellpadding</TD><TD>（値と機能はTABLEと同じ）</TD></TR>
+<TR><TD>cellbox</TD><TD>〃</TD></TR>
+<TR><TD>cellboxstyle</TD><TD>〃</TD></TR>
+<TR><TD>pstyle</TD><TD>〃</TD></TR>
+<TR><TD>tstyle</TD><TD>〃</TD></TR>
+<TR><TD>font</TD><TD>〃</TD></TR>
+<TR><TD>postnobreak</TD><TD>真ならこの行の後でページ分割しない</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<TH><TD>]]></B></TD></TR>
+<TR><TD>align</TD><TD>セル内配置。left,center,right。（THでは自動的にcenter）</TD></TR>
+<TR><TD>valign</TD><TD>セル内縦配置。top,middle,bottom</TD></TR>
+<TR><TD>cellpadding</TD><TD>（値と機能はTABLEと同じ）</TD></TR>
+<TR><TD>cellbox</TD><TD>〃</TD></TR>
+<TR><TD>cellboxstyle</TD><TD>〃</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>font</TD><TD>フォントの一時変更</TD></TR>
+<TR><TD>colspan</TD><TD>セルがまたがる列数</TD></TR>
+<TR><TD>rowspan</TD><TD>セルがまたがる行数</TD></TR>
+</TABLE>
+<FIGNOTE>カンマ区切りで列毎に指定するものが列数より少なければ最後の要素を繰り返し使う</FIGNOTE>
+</FIG>
+
+<P>
+　HTMLともっとも異なる点は、内容に応じてセル幅を自動調節する機能はなく、cellwidth属性ですべてのセル幅（列幅）を指定する必要があることです。（ポイントでの指定の他、現在の行長に対する%での指定も可能です。）指定した個数以上の列がある場合は、指定した最後の値が繰り返し使われます。具体例を一つ示します。
+</P>
+
+<CODE><![CDATA[
+<TABLE cellwidth="80, 50" cellpadding="3" cellbox=",l" align="center, right"
+　tablebox="sr5" tableboxstyle="linewidth:1">
+　<TR cellbox="b,lb">
+　　<TH>年月</TH><TH>A</TH><TH>B</TH>
+　</TR>
+　<TR>
+　　<TD>2004年1月</TD><TD>15,000</TD><TD>25,000</TD>
+　</TR>
+　<TR>
+　　<TD>2004年2月</TD><TD>12,000</TD><TD>21,000</TD>
+　</TR>
+　<TR>
+　　<TD>2004年3月</TD><TD>18,000</TD><TD>31,000</TD>
+　</TR>
+</TABLE>
+]]></CODE>
+
+<P>
+これを処理すると次のようになります。
+</P>
+
+<TABLE cellwidth="80, 50" cellpadding="3" cellbox=",l" align="center, right"
+  tablebox="sr5" tableboxstyle="linewidth:1" preskip="10" postskip="10" 
+  indent="20" nobreak="1">
+  <TR cellbox="b,lb">
+    <TH>年月</TH><TH>A</TH><TH>B</TH>
+  </TR>
+  <TR>
+    <TD>2004年1月</TD><TD>15,000</TD><TD>25,000</TD>
+  </TR>
+  <TR>
+    <TD>2004年2月</TD><TD>12,000</TD><TD>21,000</TD>
+  </TR>
+  <TR>
+    <TD>2004年3月</TD><TD>18,000</TD><TD>31,000</TD>
+  </TR>
+</TABLE>
+
+<P>
+<![CDATA[　<TH>や<TD>の中にはこの例のようにテキストを直接書くこともできますが、<P><UL><OL><DL><TABLE>といったブロック要素の命令を書くことができます。テキストを直接書いた場合は<P>…</P>で囲まれているものと見なされるわけです。テキストを直接書けるという点を除けば、<TH>や<TD>の中は小さな<BODY>だと考えることができます。これにより、複雑なページレイアウトを<TABLE>を使って実現することが可能です。（HTMLではよく使われる手法ですね。）]]>
+</P>
+
+<H4>その他の本文用マクロ</H4>
+
+<P>
+　stddefs.incのその他のマクロとしては、<INDEX reading="よこけいせん" term="横罫線"/>横罫線を引く<INDEX reading="HR" term="&lt;HR&gt;"/>&lt;HR&gt;、<INDEX reading="がぞう" term="画像"/>画像を挿入する<INDEX reading="IMG" term="&lt;IMG&gt;"/>&lt;IMG&gt;、<INDEX reading="ぶろっく" term="ブロック"/>ブロックを作って囲み枠を付けたり配置を調整したりする<INDEX reading="DIV" term="&lt;DIV&gt;"/>&lt;DIV&gt;、<INDEX reading="かんかく" term="間隔"/>間隔を調整する<INDEX reading="SKIP" term="&lt;SKIP&gt;"/>&lt;SKIP&gt;、<INDEX reading="かいぺーじ" term="改ページ"/>改ページする<INDEX reading="NEWPAGE" term="&lt;NEWPAGE&gt;"/>&lt;NEWPAGE&gt;といったものがあります。これらの属性を次に示しておきます。<![CDATA[（<NEWPAGE>には属性はなく、<NEWPAGE/>と書くだけです。）]]>
+</P>
+
+<FIG>
+<CAPTION>【表：その他のマクロの属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<HR>]]></B></TD></TR>
+<TR><TD>width</TD><TD>横幅（省略すると「100%」）
+（%指定すると現在の行長に対する割合）</TD></TR>
+<TR><TD>size</TD><TD>線幅（省略すると0.25）</TD></TR>
+<TR><TD>color</TD><TD>色（省略すると黒）</TD></TR>
+<TR><TD>align</TD><TD>left,center,rightのいずれか（省略するとcenter）</TD></TR>
+<TR><TD>preskip</TD><TD>前間隔</TD></TR>
+<TR><TD>postskip</TD><TD>後間隔</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<IMG>]]></B></TD></TR>
+<TR><TD>src</TD><TD>JPEGファイル名またはURL</TD></TR>
+<TR><TD>pxwidth</TD><TD>横ピクセルサイズ</TD></TR>
+<TR><TD>pxheight</TD><TD>縦ピクセルサイズ</TD></TR>
+<TR><TD>width</TD><TD>表示横サイズ</TD></TR>
+<TR><TD>height</TD><TD>表示縦サイズ</TD></TR>
+<TR><TD>padding</TD><TD>周囲余白</TD></TR>
+<TR><TD>colorspace</TD><TD>rgb,cmyk,grayのいずれか（省略するとrgb）</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<DIV>]]></B></TD></TR>
+<TR><TD>width</TD><TD>幅（省略すると現在の行長）</TD></TR>
+<TR><TD>align</TD><TD>left,center,rightのいずれか</TD></TR>
+<TR><TD>padding</TD><TD>周囲余白（内容と囲み枠の間の余白）</TD></TR>
+<TR><TD>withbox</TD><TD>囲み枠。s:枠線、f:塗りつぶし、sf:枠線＋塗りつぶし
+sの代わりに l:左辺、r:右辺、t:上辺、b:下辺 の組み合わせも可
+rX:（Xは数値）角を半径Xで丸くする</TD></TR>
+<TR><TD>withboxstyle</TD><TD>囲み枠の図形スタイル</TD></TR>
+<TR><TD>preskip</TD><TD>前間隔（省略すると先頭要素の前間隔）</TD></TR>
+<TR><TD>postskip</TD><TD>後間隔（省略すると末尾要素の後間隔）</TD></TR>
+<TR postnobreak="1"><TD colspan="2"><B><![CDATA[<SKIP>]]></B></TD></TR>
+<TR><TD>skip</TD><TD>間隔</TD></TR>
+</TABLE>
+</FIG>
+
+<H3 headerodd="*">ヘッダとフッタ</H3>
+
+<P>
+　ページの<INDEX reading="へっだ" term="ヘッダ"/>ヘッダと<INDEX reading="ふった" term="フッタ"/>フッタは、<INDEX reading="HEADER" term="&lt;HEADER&gt;"/>&lt;HEADER&gt;<INDEX reading="FOOTER" term="&lt;FOOTER&gt;"/>&lt;FOOTER&gt;で指定します。そのページのみ、以後の全ページ、以後の奇数ページ、以後の偶数ページ、という指定方法が用意されています。<![CDATA[<HEADER><FOOTER>]]>の属性は次の通りです。page="this"を指定したときは<![CDATA[<BODY>]]>内に置かないと効果がありません。それ以外の場合は<![CDATA[<BODY>]]>の外に置いても構いません。
+</P>
+
+<FIG>
+<CAPTION>【表：<![CDATA[<HEADER><FOOTER>]]>の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR><TD>page</TD><TD>対象ページ this:そのページのみ、all:すべて、even:偶数ページ、odd:奇数ページ（省略するとall）</TD></TR>
+<TR><TD>hr</TD><TD>横罫線の指定。位置（t:上、b:下）、文字との間隔（省略すると3）、線幅（省略すると0.25）をカンマ区切りで</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（文書の本文設定を元に一時的に変更）</TD></TR>
+<TR><TD>font</TD><TD>フォントの一時変更</TD></TR>
+<TR><TD>clear</TD><TD>真を指定すると対象ページの指定をクリア</TD></TR>
+</TABLE>
+<FIGNOTE>clearはpageがthisの時は無意味</FIGNOTE>
+</FIG>
+
+<P>
+　また、<![CDATA[<H*>]]>のheader*やfooter*属性でも指定できます。ただしこの場合はヘッダやフッタの文字列が指定できるだけで、段落スタイルやテキストスタイルは指定できません。
+　例えば、フッタには中央寄せでページ番号を表示し、偶数ページヘッダには<![CDATA[<H2>]]>の内容を左寄せ、奇数ページヘッダには<![CDATA[<H3>]]>の内容を右寄せで表示したいとすると、次のようにします。
+</P>
+
+<CODE><![CDATA[
+<HEADER page="even" pstyle="align:b"/>
+<HEADER page="odd" pstyle="align:e"/>
+<FOOTER page="all" pstyle="align:m">{page}</FOOTER>
+<BODY>
+…
+<H2 headereven="*" headerodd=" ">なんたら</H2>
+…
+<H3 headerodd="*">かんたら</H3>
+…
+</BODY>
+]]></CODE>
+
+<P>
+　ヘッダやフッタで{page}を使ったとき表示されるページ番号は、その<![CDATA[<BODY>]]>がページに配置される時点でのページ番号になります。その後でそのページより前にページが挿入されても、ヘッダやフッタで表示したページ番号は変わりませんので注意してください。
+</P>
+
+<H3 headerodd="*">索引</H3>
+
+<P>
+　<INDEX reading="さくいん" term="索引"/>索引を作りたい場合は、<![CDATA[<do file="index.inc"/>]]>で索引用マクロを読み込み、本文中の各索引語のところに<INDEX reading="INDEX" term="&lt;INDEX&gt;"/><![CDATA[<INDEX reading="読み" term="検索語">]]>と書いておいて、本文の後で<INDEX reading="MAKEINDEX" term="&lt;MAKEINDEX&gt;"/><![CDATA[<MAKEINDEX/>]]>と書きます。読みには半角英数記号とひらがなカタカナが使えます。読みが検索語と同じ場合はreadingは省略できます。
+　<![CDATA[<MAKEINDEX/>]]>の属性は次の通り。
+</P>
+
+<FIG>
+<CAPTION>【表：<![CDATA[<MAKEINDEX>]]>の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR><TD>beginindent</TD><TD>ページ番号群の行頭インデント（省略時値50）</TD></TR>
+<TR><TD>endindent</TD><TD>索引語の行末インデント（省略時値50）</TD></TR>
+<TR><TD>space</TD><TD>索引語とページ番号群の間の最小空白サイズ（省略時値20）</TD></TR>
+<TR><TD>dot</TD><TD>索引語とページ番号群の間を埋める文字列（省略時値"‥"）</TD></TR>
+<TR><TD>title</TD><TD>索引語頭文字を表示する文字列（{title}は頭文字に置換）（省略時値"－{title}－"）</TD></TR>
+<TR><TD>defaulttitle</TD><TD>英字仮名以外に対する索引語頭文字名（省略時値"記号・数字"）</TD></TR>
+</TABLE>
+</FIG>
+
+<P>
+　索引は用紙がA4なら３段組、B5なら２段組にするのが適当でしょう。そのためには、<![CDATA[<BODY cols="3">]]>などとした<![CDATA[<BODY>]]>で囲みます。その場合、索引用のヘッダやフッタの指定は<![CDATA[<BODY>]]>の前で指定しておかないと中央寄せなどの行配置がうまくいかないので注意してください。例えば次のようになります。
+</P>
+
+<CODE><![CDATA[
+<HEADER page="even" pstyle="align:b" hr="b">索引</HEADER>
+<HEADER page="odd" pstyle="align:e" hr="b">索引</HEADER>
+<BODY cols="3">
+　<H2>索引</H2>
+　<MAKEINDEX/>
+</BODY>
+]]></CODE>
+
+<H3 headerodd="*">目次</H3>
+
+<P>
+　<INDEX reading="もくじ" term="目次"/>目次を作りたい場合は、<![CDATA[<do file="toc.inc"/>]]>で目次用マクロを読み込み、本文の後で<![CDATA[<BODY page="1">…<TOC/>…</BODY>]]>と書いて1ページから挿入します。目次の前後には文書全体の表題など必要なものを入れます。<INDEX reading="TOC" term="&lt;TOC&gt;"/><![CDATA[<TOC>]]>の属性は次の通りです。
+</P>
+
+<FIG>
+<CAPTION>【表：<![CDATA[<TOC>]]>の属性】</CAPTION>
+<TABLE cellwidth="100,300">
+<TR postnobreak="1"><TH>属性名</TH><TH>値と機能</TH></TR>
+<TR><TD>levelindent</TD><TD>レベル毎のインデント量（省略時値10）</TD></TR>
+<TR><TD>endindent</TD><TD>表題の行末インデント（省略時値60）</TD></TR>
+<TR><TD>space</TD><TD>表題とページ番号の間の最小空白サイズ（省略時値30）</TD></TR>
+<TR><TD>dot</TD><TD>表題とページ番号の間を埋める文字列（省略時値"‥"）</TD></TR>
+</TABLE>
+</FIG>
+
+</BODY>
+
+<BODY>
+
+<H2 headereven="*" headerodd=" ">簡単なマクロ定義</H2>
+
+<P>
+　あらかじめ用意されたマクロを使うだけでなく、自分でマクロを定義することもできます。ここでは簡単な<INDEX reading="まくろていぎ" term="マクロ定義"/>マクロ定義の方法を二つ紹介します。もっと複雑なことをやりたい場合はXPDFJの説明書をご覧ください。
+　まず、ある命令の特定の属性を頻繁に使う場合、それをマクロ化する方法です。<INDEX reading="alias" term="&lt;alias&gt;"/><![CDATA[<alias>]]>を使います。例えば文字を赤くする
+</P>
+
+<CODE><![CDATA[
+  <S shapestyle="fillcolor:#FF0000">…</S>
+]]></CODE>
+
+<P>
+を文書の中で何度も使うようなら、
+</P>
+
+<CODE><![CDATA[
+  <alias tag="RED" aliasof="S" shapestyle="fillcolor:#FF0000"/>
+]]></CODE>
+
+<P>
+と書いてマクロREDを定義しておけば、それ以降は<![CDATA[<RED>…</RED>]]>と書くことができます。マクロの名前は、英字かアンダースコアで始め、英字、アンダースコア、ピリオド、ハイフンが使えます。何文字でも構いません。PDFJのサブルーチンやメソッドの名前とぶつかるのを防ぐために、英小文字は使わないようにしてください。
+　次の方法は、命令の固まりをまとめてマクロ化するものです。<INDEX reading="def" term="&lt;def&gt;"/><![CDATA[<def>]]>を使います。例えば、自分の所属と名前を右寄せで書く、
+</P>
+
+<CODE><![CDATA[
+<P align="right">
+　（株）ネットストック
+　中島 靖
+　mailto:nakajima@netstock.co.jp
+</P>
+]]></CODE>
+
+<P>
+という段落をどの文書でも使うのであれば、次のような内容の mymacro.inc ファイルを作っておきます。
+</P>
+
+<CODE><![CDATA[
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<do>
+<def tag="MYSIGN">
+　<return>
+　　<P align="right">
+　　　（株）ネットストック
+　　　中島 靖
+　　　mailto:nakajima@netstock.co.jp
+　　</P>
+　</return>
+</def>
+</do>
+]]></CODE>
+
+<P>
+　原稿と同様、XML文書なので先頭の<![CDATA[<?xml…?>]]>は必須です。全体を<![CDATA[<do>…</do>]]>で囲んでいるのはマクロファイルには必要なおまじないだと思ってください。
+　<![CDATA[マクロファイルの中には<def>や<alias>をいくつでも並べることができますので、先ほどの<RED>の定義を入れてしまっても構いません。]]>
+　これで、<![CDATA[<do file="stddefs.inc"/>の後に<do file="mymacro.inc"/>と書けば、<MYSIGN/>]]>と書くことで所属と名前を入れられるわけです。
+</P>
+
+</BODY>
+
+<!-- ======================= 索引 ======================= -->
+<BODY cols="3"> <!-- ３段組 -->
+
+<H2 nonumber="1" headereven="索引" headerodd="索引">索引</H2>
+<MAKEINDEX/> <!-- 索引 -->
+
+</BODY>
+
+<!-- ======================= 表紙と目次 ======================= -->
+<HEADER page="odd" clear="1"/> <!-- ヘッダはなし -->
+<HEADER page="even" clear="1"/>
+<FOOTER page="odd" clear="1"/> <!-- ページ番号はなし -->
+<FOOTER page="even" clear="1"/>
+<BODY page="1" evenpages="1"> <!-- 先頭へ挿入し、複数ページとする -->
+
+<H1>XPDFJ標準マクロ概説</H1>
+
+<Space size="30"/>
+<P align="center">
+  2005年2月19日
+  （株）ネットストック
+  中島 靖
+  &lt;nakajima@netstock.co.jp&gt;
+</P>
+<Space size="30"/>
+
+<HR/>
+<TOC/> <!-- 目次 -->
+<Space size="20"/>
+<HR/>
+
+</BODY>
+
+<!-- ======================= 出力 ======================= -->
+<print file="$Args{outfile}"/>
+
+</XPDFJ>

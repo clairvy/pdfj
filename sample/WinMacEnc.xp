@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<XPDFJ version="0.2">
+<do file="stddefs.inc"/>
+<new_font setvar="$FontH{wintimes}" basefont="Times-Roman" encoding="WinAnsiEncoding"/>
+<new_font setvar="$FontH{mactimes}" basefont="Times-Roman" encoding="MacRomanEncoding"/>
+<TStyle setvar="$TStyle{wintimes}" font="$FontH{wintimes}"/>
+<TStyle setvar="$TStyle{mactimes}" font="$FontH{mactimes}"/>
+<BODY>
+<P>
+WinAnsiEncoding
+</P>
+<TABLE cellwidth="18" cellpadding="3" cellbox="r" tablebox="s" tstyle="$TStyle{wintimes}" align="center">
+<TR cellbox="br">
+  <TD></TD>
+  <TD>2</TD>
+  <TD>3</TD>
+  <TD>4</TD>
+  <TD>5</TD>
+  <TD>6</TD>
+  <TD>7</TD>
+  <TD>8</TD>
+  <TD>9</TD>
+  <TD>A</TD>
+  <TD>B</TD>
+  <TD>C</TD>
+  <TD>D</TD>
+  <TD>E</TD>
+  <TD>F</TD>
+</TR>
+<TR>
+  <TD>0</TD>
+  <TD><CHAR code='0x20'/></TD>
+  <TD><CHAR code='0x30'/></TD>
+  <TD><CHAR code='0x40'/></TD>
+  <TD><CHAR code='0x50'/></TD>
+  <TD><CHAR code='0x60'/></TD>
+  <TD><CHAR code='0x70'/></TD>
+  <TD><CHAR code='0x80'/></TD>
+  <TD><CHAR code='0x90'/></TD>
+  <TD><CHAR code='0xa0'/></TD>
+  <TD><CHAR code='0xb0'/></TD>
+  <TD><CHAR code='0xc0'/></TD>
+  <TD><CHAR code='0xd0'/></TD>
+  <TD><CHAR code='0xe0'/></TD>
+  <TD><CHAR code='0xf0'/></TD>
+</TR>
+<TR>
+  <TD>1</TD>
+  <TD><CHAR code='0x21'/></TD>
+  <TD><CHAR code='0x31'/></TD>
+  <TD><CHAR code='0x41'/></TD>
+  <TD><CHAR code='0x51'/></TD>
+  <TD><CHAR code='0x61'/></TD>
+  <TD><CHAR code='0x71'/></TD>
+  <TD><CHAR code='0x81'/></TD>
+  <TD><CHAR code='0x91'/></TD>
+  <TD><CHAR code='0xa1'/></TD>
+  <TD><CHAR code='0xb1'/></TD>
+  <TD><CHAR code='0xc1'/></TD>
+  <TD><CHAR code='0xd1'/></TD>
+  <TD><CHAR code='0xe1'/></TD>
+  <TD><CHAR code='0xf1'/></TD>
+</TR>
+<TR>
+  <TD>2</TD>
+  <TD><CHAR code='0x22'/></TD>
+  <TD><CHAR code='0x32'/></TD>
+  <TD><CHAR code='0x42'/></TD>
+  <TD><CHAR code='0x52'/></TD>
+  <TD><CHAR code='0x62'/></TD>
+  <TD><CHAR code='0x72'/></TD>
+  <TD><CHAR code='0x82'/></TD>
+  <TD><CHAR code='0x92'/></TD>
+  <TD><CHAR code='0xa2'/></TD>
+  <TD><CHAR code='0xb2'/></TD>
+  <TD><CHAR code='0xc2'/></TD>
+  <TD><CHAR code='0xd2'/></TD>
+  <TD><CHAR code='0xe2'/></TD>
+  <TD><CHAR code='0xf2'/></TD>
+</TR>
+<TR>
+  <TD>3</TD>
+  <TD><CHAR code='0x23'/></TD>
+  <TD><CHAR code='0x33'/></TD>
+  <TD><CHAR code='0x43'/></TD>
+  <TD><CHAR code='0x53'/></TD>
+  <TD><CHAR code='0x63'/></TD>
+  <TD><CHAR code='0x73'/></TD>
+  <TD><CHAR code='0x83'/></TD>
+  <TD><CHAR code='0x93'/></TD>
+  <TD><CHAR code='0xa3'/></TD>
+  <TD><CHAR code='0xb3'/></TD>
+  <TD><CHAR code='0xc3'/></TD>
+  <TD><CHAR code='0xd3'/></TD>
+  <TD><CHAR code='0xe3'/></TD>
+  <TD><CHAR code='0xf3'/></TD>
+</TR>
+<TR>
+  <TD>4</TD>
+  <TD><CHAR code='0x24'/></TD>
+  <TD><CHAR code='0x34'/></TD>
+  <TD><CHAR code='0x44'/></TD>
+  <TD><CHAR code='0x54'/></TD>
+  <TD><CHAR code='0x64'/></TD>
+  <TD><CHAR code='0x74'/></TD>
+  <TD><CHAR code='0x84'/></TD>
+  <TD><CHAR code='0x94'/></TD>
+  <TD><CHAR code='0xa4'/></TD>
+  <TD><CHAR code='0xb4'/></TD>
+  <TD><CHAR code='0xc4'/></TD>
+  <TD><CHAR code='0xd4'/></TD>
+  <TD><CHAR code='0xe4'/></TD>
+  <TD><CHAR code='0xf4'/></TD>
+</TR>
+<TR>
+  <TD>5</TD>
+  <TD><CHAR code='0x25'/></TD>
+  <TD><CHAR code='0x35'/></TD>
+  <TD><CHAR code='0x45'/></TD>
+  <TD><CHAR code='0x55'/></TD>
+  <TD><CHAR code='0x65'/></TD>
+  <TD><CHAR code='0x75'/></TD>
+  <TD><CHAR code='0x85'/></TD>
+  <TD><CHAR code='0x95'/></TD>
+  <TD><CHAR code='0xa5'/></TD>
+  <TD><CHAR code='0xb5'/></TD>
+  <TD><CHAR code='0xc5'/></TD>
+  <TD><CHAR code='0xd5'/></TD>
+  <TD><CHAR code='0xe5'/></TD>
+  <TD><CHAR code='0xf5'/></TD>
+</TR>
+<TR>
+  <TD>6</TD>
+  <TD><CHAR code='0x26'/></TD>
+  <TD><CHAR code='0x36'/></TD>
+  <TD><CHAR code='0x46'/></TD>
+  <TD><CHAR code='0x56'/></TD>
+  <TD><CHAR code='0x66'/></TD>
+  <TD><CHAR code='0x76'/></TD>
+  <TD><CHAR code='0x86'/></TD>
+  <TD><CHAR code='0x96'/></TD>
+  <TD><CHAR code='0xa6'/></TD>
+  <TD><CHAR code='0xb6'/></TD>
+  <TD><CHAR code='0xc6'/></TD>
+  <TD><CHAR code='0xd6'/></TD>
+  <TD><CHAR code='0xe6'/></TD>
+  <TD><CHAR code='0xf6'/></TD>
+</TR>
+<TR>
+  <TD>7</TD>
+  <TD><CHAR code='0x27'/></TD>
+  <TD><CHAR code='0x37'/></TD>
+  <TD><CHAR code='0x47'/></TD>
+  <TD><CHAR code='0x57'/></TD>
+  <TD><CHAR code='0x67'/></TD>
+  <TD><CHAR code='0x77'/></TD>
+  <TD><CHAR code='0x87'/></TD>
+  <TD><CHAR code='0x97'/></TD>
+  <TD><CHAR code='0xa7'/></TD>
+  <TD><CHAR code='0xb7'/></TD>
+  <TD><CHAR code='0xc7'/></TD>
+  <TD><CHAR code='0xd7'/></TD>
+  <TD><CHAR code='0xe7'/></TD>
+  <TD><CHAR code='0xf7'/></TD>
+</TR>
+<TR>
+  <TD>8</TD>
+  <TD><CHAR code='0x28'/></TD>
+  <TD><CHAR code='0x38'/></TD>
+  <TD><CHAR code='0x48'/></TD>
+  <TD><CHAR code='0x58'/></TD>
+  <TD><CHAR code='0x68'/></TD>
+  <TD><CHAR code='0x78'/></TD>
+  <TD><CHAR code='0x88'/></TD>
+  <TD><CHAR code='0x98'/></TD>
+  <TD><CHAR code='0xa8'/></TD>
+  <TD><CHAR code='0xb8'/></TD>
+  <TD><CHAR code='0xc8'/></TD>
+  <TD><CHAR code='0xd8'/></TD>
+  <TD><CHAR code='0xe8'/></TD>
+  <TD><CHAR code='0xf8'/></TD>
+</TR>
+<TR>
+  <TD>9</TD>
+  <TD><CHAR code='0x29'/></TD>
+  <TD><CHAR code='0x39'/></TD>
+  <TD><CHAR code='0x49'/></TD>
+  <TD><CHAR code='0x59'/></TD>
+  <TD><CHAR code='0x69'/></TD>
+  <TD><CHAR code='0x79'/></TD>
+  <TD><CHAR code='0x89'/></TD>
+  <TD><CHAR code='0x99'/></TD>
+  <TD><CHAR code='0xa9'/></TD>
+  <TD><CHAR code='0xb9'/></TD>
+  <TD><CHAR code='0xc9'/></TD>
+  <TD><CHAR code='0xd9'/></TD>
+  <TD><CHAR code='0xe9'/></TD>
+  <TD><CHAR code='0xf9'/></TD>
+</TR>
+<TR>
+  <TD>A</TD>
+  <TD><CHAR code='0x2a'/></TD>
+  <TD><CHAR code='0x3a'/></TD>
+  <TD><CHAR code='0x4a'/></TD>
+  <TD><CHAR code='0x5a'/></TD>
+  <TD><CHAR code='0x6a'/></TD>
+  <TD><CHAR code='0x7a'/></TD>
+  <TD><CHAR code='0x8a'/></TD>
+  <TD><CHAR code='0x9a'/></TD>
+  <TD><CHAR code='0xaa'/></TD>
+  <TD><CHAR code='0xba'/></TD>
+  <TD><CHAR code='0xca'/></TD>
+  <TD><CHAR code='0xda'/></TD>
+  <TD><CHAR code='0xea'/></TD>
+  <TD><CHAR code='0xfa'/></TD>
+</TR>
+<TR>
+  <TD>B</TD>
+  <TD><CHAR code='0x2b'/></TD>
+  <TD><CHAR code='0x3b'/></TD>
+  <TD><CHAR code='0x4b'/></TD>
+  <TD><CHAR code='0x5b'/></TD>
+  <TD><CHAR code='0x6b'/></TD>
+  <TD><CHAR code='0x7b'/></TD>
+  <TD><CHAR code='0x8b'/></TD>
+  <TD><CHAR code='0x9b'/></TD>
+  <TD><CHAR code='0xab'/></TD>
+  <TD><CHAR code='0xbb'/></TD>
+  <TD><CHAR code='0xcb'/></TD>
+  <TD><CHAR code='0xdb'/></TD>
+  <TD><CHAR code='0xeb'/></TD>
+  <TD><CHAR code='0xfb'/></TD>
+</TR>
+<TR>
+  <TD>C</TD>
+  <TD><CHAR code='0x2c'/></TD>
+  <TD><CHAR code='0x3c'/></TD>
+  <TD><CHAR code='0x4c'/></TD>
+  <TD><CHAR code='0x5c'/></TD>
+  <TD><CHAR code='0x6c'/></TD>
+  <TD><CHAR code='0x7c'/></TD>
+  <TD><CHAR code='0x8c'/></TD>
+  <TD><CHAR code='0x9c'/></TD>
+  <TD><CHAR code='0xac'/></TD>
+  <TD><CHAR code='0xbc'/></TD>
+  <TD><CHAR code='0xcc'/></TD>
+  <TD><CHAR code='0xdc'/></TD>
+  <TD><CHAR code='0xec'/></TD>
+  <TD><CHAR code='0xfc'/></TD>
+</TR>
+<TR>
+  <TD>D</TD>
+  <TD><CHAR code='0x2d'/></TD>
+  <TD><CHAR code='0x3d'/></TD>
+  <TD><CHAR code='0x4d'/></TD>
+  <TD><CHAR code='0x5d'/></TD>
+  <TD><CHAR code='0x6d'/></TD>
+  <TD><CHAR code='0x7d'/></TD>
+  <TD><CHAR code='0x8d'/></TD>
+  <TD><CHAR code='0x9d'/></TD>
+  <TD><CHAR code='0xad'/></TD>
+  <TD><CHAR code='0xbd'/></TD>
+  <TD><CHAR code='0xcd'/></TD>
+  <TD><CHAR code='0xdd'/></TD>
+  <TD><CHAR code='0xed'/></TD>
+  <TD><CHAR code='0xfd'/></TD>
+</TR>
+<TR>
+  <TD>E</TD>
+  <TD><CHAR code='0x2e'/></TD>
+  <TD><CHAR code='0x3e'/></TD>
+  <TD><CHAR code='0x4e'/></TD>
+  <TD><CHAR code='0x5e'/></TD>
+  <TD><CHAR code='0x6e'/></TD>
+  <TD><CHAR code='0x7e'/></TD>
+  <TD><CHAR code='0x8e'/></TD>
+  <TD><CHAR code='0x9e'/></TD>
+  <TD><CHAR code='0xae'/></TD>
+  <TD><CHAR code='0xbe'/></TD>
+  <TD><CHAR code='0xce'/></TD>
+  <TD><CHAR code='0xde'/></TD>
+  <TD><CHAR code='0xee'/></TD>
+  <TD><CHAR code='0xfe'/></TD>
+</TR>
+<TR>
+  <TD>F</TD>
+  <TD><CHAR code='0x2f'/></TD>
+  <TD><CHAR code='0x3f'/></TD>
+  <TD><CHAR code='0x4f'/></TD>
+  <TD><CHAR code='0x5f'/></TD>
+  <TD><CHAR code='0x6f'/></TD>
+  <TD><CHAR code='0x7f'/></TD>
+  <TD><CHAR code='0x8f'/></TD>
+  <TD><CHAR code='0x9f'/></TD>
+  <TD><CHAR code='0xaf'/></TD>
+  <TD><CHAR code='0xbf'/></TD>
+  <TD><CHAR code='0xcf'/></TD>
+  <TD><CHAR code='0xdf'/></TD>
+  <TD><CHAR code='0xef'/></TD>
+  <TD><CHAR code='0xff'/></TD>
+</TR>
+</TABLE>
+<P>
+※95以外の箇所の黒丸は未使用コードを意味する
+</P>
+<SKIP skip="20"/>
+<P>
+MacRomanEncoding
+</P>
+<TABLE cellwidth="18" cellpadding="3" cellbox="r" tablebox="s" tstyle="$TStyle{mactimes}" align="center">
+<TR cellbox="br">
+  <TD></TD>
+  <TD>2</TD>
+  <TD>3</TD>
+  <TD>4</TD>
+  <TD>5</TD>
+  <TD>6</TD>
+  <TD>7</TD>
+  <TD>8</TD>
+  <TD>9</TD>
+  <TD>A</TD>
+  <TD>B</TD>
+  <TD>C</TD>
+  <TD>D</TD>
+  <TD>E</TD>
+  <TD>F</TD>
+</TR>
+<TR>
+  <TD>0</TD>
+  <TD><CHAR code='0x20'/></TD>
+  <TD><CHAR code='0x30'/></TD>
+  <TD><CHAR code='0x40'/></TD>
+  <TD><CHAR code='0x50'/></TD>
+  <TD><CHAR code='0x60'/></TD>
+  <TD><CHAR code='0x70'/></TD>
+  <TD><CHAR code='0x80'/></TD>
+  <TD><CHAR code='0x90'/></TD>
+  <TD><CHAR code='0xa0'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xc0'/></TD>
+  <TD><CHAR code='0xd0'/></TD>
+  <TD><CHAR code='0xe0'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+</TR>
+<TR>
+  <TD>1</TD>
+  <TD><CHAR code='0x21'/></TD>
+  <TD><CHAR code='0x31'/></TD>
+  <TD><CHAR code='0x41'/></TD>
+  <TD><CHAR code='0x51'/></TD>
+  <TD><CHAR code='0x61'/></TD>
+  <TD><CHAR code='0x71'/></TD>
+  <TD><CHAR code='0x81'/></TD>
+  <TD><CHAR code='0x91'/></TD>
+  <TD><CHAR code='0xa1'/></TD>
+  <TD><CHAR code='0xb1'/></TD>
+  <TD><CHAR code='0xc1'/></TD>
+  <TD><CHAR code='0xd1'/></TD>
+  <TD><CHAR code='0xe1'/></TD>
+  <TD><CHAR code='0xf1'/></TD>
+</TR>
+<TR>
+  <TD>2</TD>
+  <TD><CHAR code='0x22'/></TD>
+  <TD><CHAR code='0x32'/></TD>
+  <TD><CHAR code='0x42'/></TD>
+  <TD><CHAR code='0x52'/></TD>
+  <TD><CHAR code='0x62'/></TD>
+  <TD><CHAR code='0x72'/></TD>
+  <TD><CHAR code='0x82'/></TD>
+  <TD><CHAR code='0x92'/></TD>
+  <TD><CHAR code='0xa2'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xc2'/></TD>
+  <TD><CHAR code='0xd2'/></TD>
+  <TD><CHAR code='0xe2'/></TD>
+  <TD><CHAR code='0xf2'/></TD>
+</TR>
+<TR>
+  <TD>3</TD>
+  <TD><CHAR code='0x23'/></TD>
+  <TD><CHAR code='0x33'/></TD>
+  <TD><CHAR code='0x43'/></TD>
+  <TD><CHAR code='0x53'/></TD>
+  <TD><CHAR code='0x63'/></TD>
+  <TD><CHAR code='0x73'/></TD>
+  <TD><CHAR code='0x83'/></TD>
+  <TD><CHAR code='0x93'/></TD>
+  <TD><CHAR code='0xa3'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xd3'/></TD>
+  <TD><CHAR code='0xe3'/></TD>
+  <TD><CHAR code='0xf3'/></TD>
+</TR>
+<TR>
+  <TD>4</TD>
+  <TD><CHAR code='0x24'/></TD>
+  <TD><CHAR code='0x34'/></TD>
+  <TD><CHAR code='0x44'/></TD>
+  <TD><CHAR code='0x54'/></TD>
+  <TD><CHAR code='0x64'/></TD>
+  <TD><CHAR code='0x74'/></TD>
+  <TD><CHAR code='0x84'/></TD>
+  <TD><CHAR code='0x94'/></TD>
+  <TD><CHAR code='0xa4'/></TD>
+  <TD><CHAR code='0xb4'/></TD>
+  <TD><CHAR code='0xc4'/></TD>
+  <TD><CHAR code='0xd4'/></TD>
+  <TD><CHAR code='0xe4'/></TD>
+  <TD><CHAR code='0xf4'/></TD>
+</TR>
+<TR>
+  <TD>5</TD>
+  <TD><CHAR code='0x25'/></TD>
+  <TD><CHAR code='0x35'/></TD>
+  <TD><CHAR code='0x45'/></TD>
+  <TD><CHAR code='0x55'/></TD>
+  <TD><CHAR code='0x65'/></TD>
+  <TD><CHAR code='0x75'/></TD>
+  <TD><CHAR code='0x85'/></TD>
+  <TD><CHAR code='0x95'/></TD>
+  <TD><CHAR code='0xa5'/></TD>
+  <TD><CHAR code='0xb5'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xd5'/></TD>
+  <TD><CHAR code='0xe5'/></TD>
+  <TD><CHAR code='0xf5'/></TD>
+</TR>
+<TR>
+  <TD>6</TD>
+  <TD><CHAR code='0x26'/></TD>
+  <TD><CHAR code='0x36'/></TD>
+  <TD><CHAR code='0x46'/></TD>
+  <TD><CHAR code='0x56'/></TD>
+  <TD><CHAR code='0x66'/></TD>
+  <TD><CHAR code='0x76'/></TD>
+  <TD><CHAR code='0x86'/></TD>
+  <TD><CHAR code='0x96'/></TD>
+  <TD><CHAR code='0xa6'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xd6'/></TD>
+  <TD><CHAR code='0xe6'/></TD>
+  <TD><CHAR code='0xf6'/></TD>
+</TR>
+<TR>
+  <TD>7</TD>
+  <TD><CHAR code='0x27'/></TD>
+  <TD><CHAR code='0x37'/></TD>
+  <TD><CHAR code='0x47'/></TD>
+  <TD><CHAR code='0x57'/></TD>
+  <TD><CHAR code='0x67'/></TD>
+  <TD><CHAR code='0x77'/></TD>
+  <TD><CHAR code='0x87'/></TD>
+  <TD><CHAR code='0x97'/></TD>
+  <TD><CHAR code='0xa7'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xc7'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xe7'/></TD>
+  <TD><CHAR code='0xf7'/></TD>
+</TR>
+<TR>
+  <TD>8</TD>
+  <TD><CHAR code='0x28'/></TD>
+  <TD><CHAR code='0x38'/></TD>
+  <TD><CHAR code='0x48'/></TD>
+  <TD><CHAR code='0x58'/></TD>
+  <TD><CHAR code='0x68'/></TD>
+  <TD><CHAR code='0x78'/></TD>
+  <TD><CHAR code='0x88'/></TD>
+  <TD><CHAR code='0x98'/></TD>
+  <TD><CHAR code='0xa8'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xc8'/></TD>
+  <TD><CHAR code='0xd8'/></TD>
+  <TD><CHAR code='0xe8'/></TD>
+  <TD><CHAR code='0xf8'/></TD>
+</TR>
+<TR>
+  <TD>9</TD>
+  <TD><CHAR code='0x29'/></TD>
+  <TD><CHAR code='0x39'/></TD>
+  <TD><CHAR code='0x49'/></TD>
+  <TD><CHAR code='0x59'/></TD>
+  <TD><CHAR code='0x69'/></TD>
+  <TD><CHAR code='0x79'/></TD>
+  <TD><CHAR code='0x89'/></TD>
+  <TD><CHAR code='0x99'/></TD>
+  <TD><CHAR code='0xa9'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xc9'/></TD>
+  <TD><CHAR code='0xd9'/></TD>
+  <TD><CHAR code='0xe9'/></TD>
+  <TD><CHAR code='0xf9'/></TD>
+</TR>
+<TR>
+  <TD>A</TD>
+  <TD><CHAR code='0x2a'/></TD>
+  <TD><CHAR code='0x3a'/></TD>
+  <TD><CHAR code='0x4a'/></TD>
+  <TD><CHAR code='0x5a'/></TD>
+  <TD><CHAR code='0x6a'/></TD>
+  <TD><CHAR code='0x7a'/></TD>
+  <TD><CHAR code='0x8a'/></TD>
+  <TD><CHAR code='0x9a'/></TD>
+  <TD><CHAR code='0xaa'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xca'/></TD>
+  <TD><CHAR code='0xda'/></TD>
+  <TD><CHAR code='0xea'/></TD>
+  <TD><CHAR code='0xfa'/></TD>
+</TR>
+<TR>
+  <TD>B</TD>
+  <TD><CHAR code='0x2b'/></TD>
+  <TD><CHAR code='0x3b'/></TD>
+  <TD><CHAR code='0x4b'/></TD>
+  <TD><CHAR code='0x5b'/></TD>
+  <TD><CHAR code='0x6b'/></TD>
+  <TD><CHAR code='0x7b'/></TD>
+  <TD><CHAR code='0x8b'/></TD>
+  <TD><CHAR code='0x9b'/></TD>
+  <TD><CHAR code='0xab'/></TD>
+  <TD><CHAR code='0xbb'/></TD>
+  <TD><CHAR code='0xcb'/></TD>
+  <TD><CHAR code='0xdb'/></TD>
+  <TD><CHAR code='0xeb'/></TD>
+  <TD><CHAR code='0xfb'/></TD>
+</TR>
+<TR>
+  <TD>C</TD>
+  <TD><CHAR code='0x2c'/></TD>
+  <TD><CHAR code='0x3c'/></TD>
+  <TD><CHAR code='0x4c'/></TD>
+  <TD><CHAR code='0x5c'/></TD>
+  <TD><CHAR code='0x6c'/></TD>
+  <TD><CHAR code='0x7c'/></TD>
+  <TD><CHAR code='0x8c'/></TD>
+  <TD><CHAR code='0x9c'/></TD>
+  <TD><CHAR code='0xac'/></TD>
+  <TD><CHAR code='0xbc'/></TD>
+  <TD><CHAR code='0xcc'/></TD>
+  <TD><CHAR code='0xdc'/></TD>
+  <TD><CHAR code='0xec'/></TD>
+  <TD><CHAR code='0xfc'/></TD>
+</TR>
+<TR>
+  <TD>D</TD>
+  <TD><CHAR code='0x2d'/></TD>
+  <TD><CHAR code='0x3d'/></TD>
+  <TD><CHAR code='0x4d'/></TD>
+  <TD><CHAR code='0x5d'/></TD>
+  <TD><CHAR code='0x6d'/></TD>
+  <TD><CHAR code='0x7d'/></TD>
+  <TD><CHAR code='0x8d'/></TD>
+  <TD><CHAR code='0x9d'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0x00'/></TD>
+  <TD><CHAR code='0xcd'/></TD>
+  <TD><CHAR code='0xdd'/></TD>
+  <TD><CHAR code='0xed'/></TD>
+  <TD><CHAR code='0xfd'/></TD>
+</TR>
+<TR>
+  <TD>E</TD>
+  <TD><CHAR code='0x2e'/></TD>
+  <TD><CHAR code='0x3e'/></TD>
+  <TD><CHAR code='0x4e'/></TD>
+  <TD><CHAR code='0x5e'/></TD>
+  <TD><CHAR code='0x6e'/></TD>
+  <TD><CHAR code='0x7e'/></TD>
+  <TD><CHAR code='0x8e'/></TD>
+  <TD><CHAR code='0x9e'/></TD>
+  <TD><CHAR code='0xae'/></TD>
+  <TD><CHAR code='0xbe'/></TD>
+  <TD><CHAR code='0xce'/></TD>
+  <TD><CHAR code='0xde'/></TD>
+  <TD><CHAR code='0xee'/></TD>
+  <TD><CHAR code='0xfe'/></TD>
+</TR>
+<TR>
+  <TD>F</TD>
+  <TD><CHAR code='0x2f'/></TD>
+  <TD><CHAR code='0x3f'/></TD>
+  <TD><CHAR code='0x4f'/></TD>
+  <TD><CHAR code='0x5f'/></TD>
+  <TD><CHAR code='0x6f'/></TD>
+  <TD><CHAR code='0x7f'/></TD>
+  <TD><CHAR code='0x8f'/></TD>
+  <TD><CHAR code='0x9f'/></TD>
+  <TD><CHAR code='0xaf'/></TD>
+  <TD><CHAR code='0xbf'/></TD>
+  <TD><CHAR code='0xcf'/></TD>
+  <TD><CHAR code='0xdf'/></TD>
+  <TD><CHAR code='0xef'/></TD>
+  <TD><CHAR code='0xff'/></TD>
+</TR>
+</TABLE>
+</BODY>
+<print file="$Args{outfile}"/>
+</XPDFJ>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<XPDFJ version="0.2">
+<do file="article.inc"/>
+<ARTICLE>
+<HEAD>
+<TITLE>
+Perl言語による日本語PDF生成モジュール - PDFJ
+</TITLE>
+<AUTHOR>
+中 島   靖<SUP>†</SUP>
+</AUTHOR>
+<SUMMARY>
+PDF形式の文書ファイルをPerl言語によって生成するためのライブラリモジュールを作成した。JIS規格の日本語の組版ルールを組み込んでおり、文字列を折り返して行を構成する際の禁則処理や文字間隔の調整など、日本語に固有の組版処理をサポートする。文字段落や画像や図形といった構成要素を並べたブロックを、入れ子にして表を作成したり、指定の大きさに分割してページ毎に配置したりすることができる。また、XML形式の原稿からPDFを生成する、XPDFJというモジュールも付属している。
+</SUMMARY>
+<ETITLE>
+Perl Japanese PDF Generation Module - PDFJ
+</ETITLE>
+<EAUTHOR>
+Yasushi Nakajima<SUP>†</SUP>
+</EAUTHOR>
+<ESUMMARY>
+PDFJ is a Perl language library module to generate PDF document files. It conforms to the JIS standard of Japanese document layout rules. Then it supports the inhibitions on line folding or letter spacing rules. It can make blocks with paragraphs, images and shapes and it can make tables by nested blocks. It can break a block by specified size and layout each broken block to a page. It includes XPDJ module which generates PDF files from XML source texts.
+</ESUMMARY>
+</HEAD>
+<BODY>
+<FOOTNOTE label="†">
+（株）ネットストック
+Netstock Corporation
+Email: nakajima@netstock.co.jp
+</FOOTNOTE>
+<SECTITLE>はじめに</SECTITLE>
+<SUBSECTITLE>PDFJ作成の動機</SUBSECTITLE>
+<P>
+　PDFJを作成した動機は次の二つである。
+</P>
+<OL prelabel="（" postlabel="）">
+<LI>Webアプリケーションにおけるサーバー側でのPDF生成</LI>
+</OL>
+<P>
+　Webアプリケーションに帳票などの印刷機能を持たせようとすると、Webブラウザの印刷機能ではページ制御ができないなど力不足である。この一つの解決方法として、普及した文書フォーマットであるPDF形式で帳票等の内容を出力することが考えられる。そのためにサーバー側で動的にPDFを生成しなければならず、プログラム言語にPDF生成機能が必要となる。サーバー側で採用する言語がJavaである場合はFOP<SUP>1)</SUP>というライブラリがPDF生成機能を持っているが、Perl言語を使用する場合、従来はPDFLib<SUP>2)</SUP>というライブラリを使用するのが一般的であった。しかしPDFLibの機能はプリミティブなもので、日本語の禁則処理や文字間隔の調整などのルールを意識した組版処理をおこなうにはプログラムの負担が大きい。罫線の入った表の作成や、大きなレイアウト要素を分割してページをまたがって配置する、といった処理についても同様である。
+　そこで、こういった機能を盛り込んだライブラリモジュールとして作成したのがPDFJである。
+</P>
+<OL prelabel="（" postlabel="）" label="-">
+<LI>書籍や論文の作成</LI>
+</OL>
+<P>
+　書籍や論文を自分でレイアウトしようとすると、LaTeXを使用するのが一般的である。筆者も過去に書籍を執筆した際に、レイアウトのためのLaTeXの複雑なマクロを作成しようとしてデバッグに多大の時間を費やした経験を持つ。LaTeXのマクロプログラミングの作業は、少なくとも筆者にとっては容易なものではない。できることなら使いなればPerl言語でレイアウトがプログラミングできないものかと考えたのが、PDFJを作成したもう一つの動機である。
+</P>
+<SUBSECTITLE>PDFJの到達点</SUBSECTITLE>
+<P>
+　PDFJは2002年に開発を始めて、現在も開発途上にある。
+　帳票作成の用途についてはある程度実用になるところまで来ており、実際の業務での使用例もある。書籍や論文作成の用途については、まだ実際に使用する段階には至っていない。
+</P>
+<SECTITLE>PDFJの概要</SECTITLE>
+<SUBSECTITLE>PDFJの機能</SUBSECTITLE>
+<P>
+　PDFJは次のような機能を持っている。
+</P>
+<UL>
+<LI>JIS X 4051「日本語文書の行組版方法」にほぼ準拠。禁則、行の詰め伸ばし、ルビ、添え字、縦書き中の欧文、縦中横、欧文のハイフネーション、下線・傍線、圏点、網掛け</LI>
+<LI>使用可能なType1フォントは、和文にRyumin-LightとGothicBBB-Medium、欧文にTimes、Helvetica、Courierの各ファミリ。これらのフォントは埋め込まれない</LI>
+<LI>TrueTypeフォントは任意のものが使用可能。TrueTypeフォントは埋め込まれる（和文についてはサブセットで）</LI>
+<LI>欧文に、固定ピッチの半角フォントと、プロポーショナルな欧文フォントが可能</LI>
+<LI>シフトJIS、日本語EUC、UTF8、Unicodeに対応</LI>
+<LI>JPEG画像（ファイルおよびURL指定）と線画図形。画像や図形の行内配置。線画図形中のテキストや画像</LI>
+<LI>行長と行送りの指定による段落。箇条書きのためのラベル可</LI>
+<LI>段落、画像、図形などを並べたブロック。ブロックには、内容の配置、周囲の余白、枠線、塗りつぶし色などを指定可。ブロック内の並び方向は、上→下、左→右、右→左。入れ子のブロックによる表作成</LI>
+<LI>段落やブロックを指定の大きさを超えないように分割して、ページ毎に配置。分割の際に先頭や末尾に移動するブロック要素</LI>
+<LI>PDFの文書情報、アウトライン情報、ハイパーリンク（文書内およびURL）の付加。暗号化</LI>
+</UL>
+<SUBSECTITLE>動作環境</SUBSECTITLE>
+<P>
+　PDFJはPerl言語だけで書かれており、Perl5.005以降で動作する。下請けとして、TeX::Hyphen、Compress::Zlib、Digest::MD5の各Perlモジュールを使用する。ただしCompress::Zlibは使用しないことも可能。Digest::MD5は暗号化の時にのみ使用される。
+</P>
+<SECTITLE>XPDFJの概要</SECTITLE>
+<P>
+　XPDFJはXML形式で書かれた原稿を読み取ってPDFJを呼び出す命令に変換することによってPDFを生成するモジュールである。XMLの読み取りにはXML::Parserモジュールを使用する。
+</P>
+<P>
+　XPDFJの原稿におけるXMLベースの書式では、PDFJに用意されたサブルーチンやメソッドの呼び出しをXML形式で書く規則が定められているとともに、Perlの式と変数によってPDFJの各種オブジェクトを操作できる仕組みが盛り込まれている。これによって、PDFJを使ってPDFを生成しているPerlプログラムをXML形式に書き直すことができる。もちろんそれだけではかえって書き方が面倒なだけでメリットはない。XPDFJでは、新たなXML要素名＝命令とその働きを既存の命令から定義することのできるマクロ機能が用意されている。定義された命令には属性や内容によって引数を与えることができるので、上述のPerlの式や変数を操作する機能と組み合わせれば、複雑な機能を持たせることができる。XPDFJに添付されている標準マクロ（stddefs.inc）では表1のようなHTMLライクなマクロ<SUP>☆</SUP>が用意されている。また、論文用マクロ（article.inc）では標準マクロに加えて表2のようなマクロが用意されている。本稿はこの論文用マクロの使用例となっている。ただし、これらのマクロファイルは開発途上であり、変更の可能性が大いにあることに注意していただきたい。
+</P>
+<FOOTNOTE label="☆">
+XPDFJの標準マクロで定義されたHTMLと同名の要素名は、そこから連想されるような機能を持っているが、属性は違いが大きく互換性はない。
+</FOOTNOTE>
+<FIG>
+  <CAPTION>表1　XPDFJの標準マクロにおけるマクロ命令</CAPTION>
+  <ECAPTION>Fig.1  Macro commands defined in the XPDFJ standard macro file</ECAPTION>
+  <TABLE cellwidth="40%, 50%" cellpadding="3" cellbox="r" tablebox="s" 
+  preskip="10" pstyle="linefeed:120%; align:b">
+    <TR>
+      <TD>S</TD>
+      <TD>テキストスタイル</TD>
+    </TR>
+    <TR>
+      <TD>B, I, U, SUP, SUB</TD>
+      <TD>太字、斜体、下線、上付、下付</TD>
+    </TR>
+    <TR>
+      <TD>H1～4, P, BR</TD>
+      <TD>見出し、段落、改行</TD>
+    </TR>
+    <TR>
+      <TD>UL, OL, LI</TD>
+      <TD>箇条書き</TD>
+    </TR>
+    <TR>
+      <TD>DL, DT, DD</TD>
+      <TD>語句説明</TD>
+    </TR>
+    <TR>
+      <TD>TABLE, TR, TD, TH</TD>
+      <TD>表</TD>
+    </TR>
+    <TR>
+      <TD>IMG</TD>
+      <TD>画像</TD>
+    </TR>
+    <TR>
+      <TD>DIV, HR, SKIP, NEWPAGE</TD>
+      <TD>ブロック、横罫線、間隔、改ページ</TD>
+    </TR>
+    <TR>
+      <TD>BODY</TD>
+      <TD>文書内容全体を囲む</TD>
+    </TR>
+  </TABLE>
+</FIG>
+<FIG>
+  <CAPTION>表2　XPDFJの論文用マクロにおけるマクロ命令</CAPTION>
+  <ECAPTION>Fig.2  Macro commands defined in the XPDFJ article macro file</ECAPTION>
+  <TABLE cellwidth="40%, 50%" cellpadding="3" cellbox="r" tablebox="s" 
+  preskip="10" pstyle="linefeed:120%; align:b">
+    <TR>
+      <TD>ARTICLE</TD>
+      <TD>論文全体を囲む</TD>
+    </TR>
+    <TR>
+      <TD>HEAD</TD>
+      <TD>ヘッダ部を囲む</TD>
+    </TR>
+    <TR>
+      <TD>TITLE, ETITLE</TD>
+      <TD>表題、英文表題</TD>
+    </TR>
+    <TR>
+      <TD>AUTHOR, EAUTHOR</TD>
+      <TD>著者名、英文著者名</TD>
+    </TR>
+    <TR>
+      <TD>SUMMARY, ESUMMARY</TD>
+      <TD>概要、英文概要</TD>
+    </TR>
+    <TR>
+      <TD>BODY</TD>
+      <TD>本文部を囲む</TD>
+    </TR>
+    <TR>
+      <TD>SECTITLE, SUBSECTITLE</TD>
+      <TD>章見出し、節見出し</TD>
+    </TR>
+    <TR>
+      <TD>FOOTNOTE</TD>
+      <TD>脚注</TD>
+    </TR>
+    <TR>
+      <TD>FIG</TD>
+      <TD>図表ブロック</TD>
+    </TR>
+    <TR>
+      <TD>CAPTION, ECAPTION</TD>
+      <TD>図表のキャプション、同英文</TD>
+    </TR>
+    <TR>
+      <TD>REFERENCE</TD>
+      <TD>参考文献</TD>
+    </TR>
+  </TABLE>
+</FIG>
+<SECTITLE>今後の課題</SECTITLE>
+<P>
+　今後の課題としては、XPDFJのマクロなどの機能強化はもちろんであるが、チャレンジングな課題として次のものがあげられる。
+</P>
+<OL prelabel="（" postlabel="）">
+<LI>対話フォーム、スライドショー、注釈、電子署名といったPDFの機能への対応</LI>
+<P>特に対話フォームと電子署名は、電子文書ならではのPDFの活用の上で重要と考えている。</P>
+<LI>数式のレイアウト機能</LI>
+<P>論文では数式のレイアウト機能が必要であり、LaTeXと比較しての最大の弱点となっている。</P>
+<LI>図形エディタ</LI>
+<P>GUI操作で図形を作成できないと、図形を活用しきれない。</P>
+<LI>レイアウト機能の強化</LI>
+<P>段組の時の段をまたがる要素の配置、図形を自動的に避ける段落の作成など。</P>
+<LI>一冊本を書いてみる</LI>
+<P>書籍用マクロを作成し、一冊丸ごと本を書いてみたい。</P>
+<LI>既存PDFの操作</LI>
+<P>この要望は非常に多い。PDFJとは別のモジュールとして作成することになるだろう。</P>
+</OL>
+<SECTITLE label=" ">文　献</SECTITLE>
+<REFERENCE label="1)">
+FOP: http://xml.apache.org/fop/
+</REFERENCE>
+<REFERENCE label="2)">
+PDFLib: http://www.pdflib.com/
+</REFERENCE>
+<REFERENCE label="3)">
+アドビシステムズ：PDFリファレンス第2版，ピアソンエデュケーション(2001)
+</REFERENCE>
+</BODY>
+</ARTICLE>
+<print file="articledemo.pdf"/>
+</XPDFJ>

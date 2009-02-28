@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<!--
+  feedback.xp - フォーム機能のデモを兼ねたPDFJフィードバックシート
+  2006 <nakajima@netstock.co.jp>
+-->
+<XPDFJ version="0.2">
+<require module="PDFJ::Form"/>
+<do file="stddefs.inc" fontsize="12"/>
+
+<eval>
+  $MakeTime = localtime;
+  $PerlVersion = "$]($^O)";
+  $PDFJVersion = $Args{'PDFJ:VERSION'};
+  $XPDFJVersion = $Args{'XPDFJ:VERSION'};
+  $FieldBGColor = "#ffffe0";
+  $ROFieldBGColor = "0.95";
+  $ButtonBGColor = "#e0ffff";
+</eval>
+
+<!-- <TDF>：項目名用の<TD> -->
+<alias tag="TDF" aliasof="TD" valign="middle" cellbox="sf" cellboxstyle="fillcolor:0.9; strokecolor:1; linewidth:2"/>
+
+<!-- 
+  <TEXTBOX>：テキストボックス 
+  必須属性：name、width
+-->
+<alias tag="TEXTBOX" aliasof="new_field" type="Text" height="14" font="$FontH{mincho}" fontsize="12" fillcolor="$FieldBGColor"/>
+
+<!-- 
+  <ROTEXTBOX>：読み取り専用テキストボックス 
+  必須属性：name、width、value
+-->
+<alias tag="ROTEXTBOX" aliasof="new_field" type="Text" height="14" font="$FontH{mincho}" fontsize="12" readonly="1" fillcolor="$ROFieldBGColor"/>
+
+<!-- 
+  <CHECKBOX>：チェックボックス 
+  必須属性：name
+-->
+<alias tag="CHECKBOX" aliasof="new_field" type="CheckBox" width="12" height="12" size="10" fillcolor="$FieldBGColor"/>
+
+<!-- 
+  <RADIOS>：ラジオボタン 
+  必須属性：name、values
+  ※valuesはカンマ区切り、その個数だけのフィールドオブジェクトの配列参照が返る
+    ので、setvarでそれを変数にセットすること
+-->
+<alias tag="RADIOS" aliasof="new_field" type="RadioButton" width="12" height="12" size="10" fillcolor="$FieldBGColor"/>
+
+<!-- 
+  <SUBMIT>：送信ボタン 
+  必須属性：url、format
+-->
+<alias tag="SUBMIT" aliasof="new_field" type="Button" buttontype="Submit" name="Submit" caption="送信" width="80" height="20" font="$FontH{mincho}" fontsize="12" fillcolor="$ButtonBGColor" noprint="1"/>
+
+<!-- 
+  <RESET>：リセットボタン 
+-->
+<alias tag="RESET" aliasof="new_field" type="Button" buttontype="Reset" name="Reset" caption="リセット" width="80" height="20" font="$FontH{mincho}" fontsize="12" fillcolor="$ButtonBGColor" noprint="1"/>
+
+<BODY>
+
+<H2 pstyle="align:m">
+<U>PDFJフィードバックシート</U>
+</H2>
+
+<P>
+　今後の開発の参考にさせていただきますので、よろしければ記入して送信してください。なお、質問など応答の必要な内容はメーリングリストへお願いします。
+　また、バージョン情報などはこのシートが生成される時に取得されますので、ご使用のOS、Perl、PDFJのバージョンが変わった時は再度シートを生成し直してご使用ください。
+</P>
+
+<TABLE cellwidth="30%, 70%" cellpadding="5" pstyle="linefeed:120%" preskip="20" postskip="20">
+<TR>
+  <TDF>本シート生成日時</TDF>
+  <TD>
+    <ROTEXTBOX name="MakeTime" width="200" value="$MakeTime"/>
+  </TD>
+</TR>
+<TR>
+  <TDF>バージョン</TDF>
+  <TD>
+    <TABLE cellwidth="20%, 80%" cellpadding="2">
+      <TR>
+        <TD>Perl</TD>
+        <TD><ROTEXTBOX name="VersionPerl" width="200" value="$PerlVersion"/></TD>
+      </TR>
+      <TR>
+        <TD>PDFJ</TD>
+        <TD><ROTEXTBOX name="VersionPDFJ" width="100" value="$PDFJVersion"/></TD>
+      </TR>
+      <TR>
+        <TD>XPDFJ</TD>
+        <TD><ROTEXTBOX name="VersionXPDFJ" width="100" value="$XPDFJVersion"/></TD>
+      </TR>
+    </TABLE>
+  </TD>
+</TR>
+<TR>
+  <TDF>どのようにしてPDFJを知りましたか</TDF>
+  <TD>
+    <P>
+      <CHECKBOX name="BySearch"/>インターネットの検索サービスで<BR/>
+      <CHECKBOX name="ByLink"/>他のWebサイトからのリンクで<BR/>
+      <CHECKBOX name="ByMagazine"/>雑誌で<BR/>
+      <CHECKBOX name="ByFriend"/>口コミで<BR/>
+    </P>
+  </TD>
+</TR>
+<TR>
+  <TDF>どのようにお使いですか①</TDF>
+  <TD>
+    <P>
+      <CHECKBOX name="InTest"/>ちょっと試してるだけ<BR/>
+      <CHECKBOX name="InPersonalClient"/>個人的にクライアントマシンで<BR/>
+      <CHECKBOX name="InPersonalServer"/>個人的にサーバーマシンで<BR/>
+      <CHECKBOX name="InBusinessClient"/>仕事でクライアントマシンで<BR/>
+      <CHECKBOX name="InBusinessServer"/>仕事でサーバーマシンで<BR/>
+    </P>
+  </TD>
+</TR>
+<TR>
+  <TDF>どのようにお使いですか②</TDF>
+  <TD>
+    <P>
+      <CHECKBOX name="UsePDFJ"/>PDFJを使うスクリプトを書いて<BR/>
+      <CHECKBOX name="UseXPDFJ"/>XPDFJを用いて<BR/>
+      <CHECKBOX name="UseUtility"/>pod2pdf.plやtext2pdf.plのユーティリティで<BR/>
+    </P>
+  </TD>
+</TR>
+<TR>
+  <TDF>PDFJの機能はあなたの目的を満たしていますか</TDF>
+  <TD>
+    <do result="null">
+      <eval>
+        $_labels = [qw(十分満たしている 使えるが足りないところも かなり足りないので使えない わからない)];
+        $_values = [qw(OK LittleShort MuchShort Unknown)];
+      </eval>
+      <RADIOS setvar="$_rba" name="Evaluation" values="$_values"/>
+    </do>
+    <P>
+      <for setvar="$_rbi" eval="(0..$#$_rba)">
+        <reval>$_rba->[$_rbi]</reval>
+        <reval>$_labels->[$_rbi]</reval><BR/>
+      </for>
+    </P>
+  </TD>
+</TR>
+<TR>
+  <TDF>ご意見、盛り込んで欲しい機能など、ありましたらどうぞ</TDF>
+  <TD><TEXTBOX name="Comment" width="300" height="100" multiline="1"/></TD>
+</TR>
+</TABLE>
+
+<P align="m">
+  <SUBMIT url="http://hp1.jonex.ne.jp/~nakajima.yasushi/PDFJfeedback.cgi" format="post"/> <RESET/>
+</P>
+
+</BODY>
+
+<print file="$Args{outfile}"/>
+
+</XPDFJ>

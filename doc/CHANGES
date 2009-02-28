@@ -1,0 +1,296 @@
+2002/5/27 - 0.1
+	・初期リリース
+
+2002/5/28 - 0.1a
+	・PDFJ.jp.htmlの手直し
+
+2002/6/19 - 0.11
+	・NewLineで強制改行した行が'w'行揃えで両端揃えにならないようにした
+
+2002/7/31 - 0.2
+	・ParagraphとBlockにbreakメソッドを追加
+	・PStyleのキーadjustをalignに変更、その値もl→b、c→m、r→eに変更
+	  【重要】このために0.11までのスクリプトは修正が必要
+	・NewLineの直後のスペースが表示されないバグを修正
+	・サンプルスクリプト text2pdf.pl を追加
+
+2002/8/5 - 0.3
+	・アウトライン機能を追加
+	・段落スタイルとブロックスタイルのunbreakableをnobreakに変更
+	・段落スタイルとブロックスタイルにpostnobreakを追加
+	・サンプルスクリプト pod2pdf.pl を追加
+
+2002/8/10 - 0.4
+	・Makefile.PLを追加
+	・Text()とBlock()の引数でリストをそのまま指定できるようにした
+	・段落スタイルで linefeed => '150%' を可能にした
+	・段落スタイルでpreskipとpostskipのデフォルトをフォントサイズ/2から行間/2に変更
+	・ラベル付き段落をbreakすると２番目以降の段落にもラベルが付くバグを修正
+	・box()の描画指示に、特定の辺を指示するl、r、t、bを追加
+	・ブロックスタイルにrepeatheaderを追加
+
+2002/10/16 - 0.5
+	・TrueTypeフォントサポート（PDFJ/TTF.pm、PDFJ/U2C.pm）
+	・ttf.plとttc.plを追加
+
+2002/10/18 - 0.6
+	・２引数のnew_font()に.ttcフォントを与えるとエラーになるバグを修正
+	・ハイパーリンク（文書内とURI）機能を追加
+	・サンプルスクリプトnouhinsho.plとそのデータnouhinsho.datを追加
+	・テキストスタイルにitalicとboldを追加
+	・ドキュメントクラスにitalic()とbold()メソッドを追加
+	・pod2pdf.plで、B<>などの内部シーケンスに対応
+	・demo.plを改訂
+
+2002/12/23 - 0.62
+	・beginindentとendindentを配列参照で指定してインデントを行毎に変更可能
+	・段落スタイルにlabelskipを追加
+	・段落スタイルにbeginpaddingを追加
+	・ラベル幅＋labelskipがlabelsizeを超えると先頭行をその分だけインデントして、ラベルと本文が重ならないようにした
+	・ブロックスタイルにbeginpaddingを追加
+	・段落、ブロック、図形スタイルに、floatを追加（b:先頭、e:末尾、h:可能ならその位置）
+	・ブロックのbreak()でfloat要素を考慮するようにした
+	・ブロックスタイルにnofirstfloatを追加（真だとbreak()で先頭ページの先頭にはfloat要素は来ない）
+	・図形スタイルにpostnobreakを追加
+	・ドキュメントオブジェクトのget_page()がPDFのページオブジェクトを返していたのを、PDFJ::Pageオブジェクトを返すように修正
+	・段落の末尾に長い欧文があるとハイフネーションされないバグを修正
+	・テキスト要素に段落オブジェクトやブロックオブジェクトを可能にした
+	・new_image()の引数にカラースペース指定を追加
+	・NewBlock()を追加
+	・$Default{PostShift}にpuncクラスが抜けていたのを修正
+	・リンクのURIは、URIエンコードされていない場合だけエンコードするようにした
+
+2003/10/7 - 0.7
+	・文字コードにUNICODEとUTF8を追加
+	・XPDFJ.pmを追加
+	・多くのメソッドやサブルーチンで、ハッシュ参照による名前付き引数を可能にした
+	・PDFJ::Page::show()を追加
+	・PDFJ::Doc::Doc()を追加
+	・PDFJ::BlockStyle::BlockSkip()を追加
+	・非整数の数値オブジェクトは%.14fで書き込むようにした
+	・ブロックのbreak()で、分割した位置にNewBlockが来るとbreak()に失敗する不具合を修正
+	・スタイルを作成するときやclone()するとき、内容をcssライクな文字列で与えることができる
+	・スタイルで、fillcolorやstrokecolorの値にスカラやハッシュ参照を渡すと自動的にColorオブジェクト化する
+	・スタイルで、withboxstyleやwithlinestyleの値にハッシュ参照を渡すと自動的にShapeStyleオブジェクト化する
+	・Text()、Paragraph()、Block()、Shape()、line()、box()、ellipse()、circle()、polygon()でスタイルに文字列やハッシュ参照を渡すと自動的に対応するスタイルオブジェクト化する
+	・withnoteに文字列を与え、withnotestyleにテキストスタイルオブジェクトを与えられる
+	・linedashに配列参照の代わりに'2,2'のようなカンマ区切りの文字列を与えられる
+
+2003/10/9 - 0.71
+	・標準出力にprintすると、xrefが正しく出力されない不具合を修正
+	・XPDFJの<def>にcontentsmodeを追加し、実行時の内容の扱いを改善した
+	・XPDFJに<require>と<reval>を追加
+	・stddefs.inc内に簡単な説明を追加した
+
+2003/11/7 - 0.72
+	・UTF8のときに圏点が出力されない不具合を修正
+	・XPDFJの%Argsの管理方法を待避からレイヤに変更（XPDFJ::Argsを導入）
+	・XPDFJの<do contents="…">実行時の%Argsを、実行する内容の書かれた場所に合わせた。これによって<def><do contents="…">を入れ子にしても正しく動作するようになった
+	・上記に合わせてstddefs.incを若干修正
+	・XPDFJの<eval>では-wをオフにして警告を抑制するようにした
+	・XPDFJの<debuginfo>はXPDFJ->new()に与えるdebuginfoで出力を切り替えるようにした
+	・XPDFJのverboseをXPDFJ->new()で与えられるようにした
+
+2004/2/17 - 0.73
+	・Perl5.8でPDFJ::Unicode::utf8tounicode()が誤った変換をする場合がある不具合を修正
+	・XPDFJのcontentsmodeに"arg"を導入し、デフォルトを"raw"に変更
+	・XPDFJのcontentsmode="raw"の時の引数レベルの渡し方をXPDF::TREEnによるblessに変更
+	・XPDFJの<def>に<return>を導入（従来のマクロはすべて書き換えが必要!!!）
+	・上記に合わせてstddefs.incを修正
+
+2004/4/9 - 0.74
+	・行頭から行分割可能位置がないまま行長を超えてその後に分割可能位置が現れると正しく行分割されない不具合を修正
+	・PDFJ::Doc::add_info()の追加により、文書情報が追加できるようになった
+	・PDFJ::Doc::encrypt()の追加により、暗号化ができるようになった
+
+2004/6/6 - 0.75
+	・XPDFJのsetvar属性でセットする値が空の場合にセットされずに元の値が残る不具合を修正
+	・ルビの方が長いときに親文字列の字間が空かない不具合を修正
+	・入れ子になったBlockをbreakしたときに空のBlockができるのを抑止した
+	・pod2pdf.plのレイアウトに全体に余裕を持たせ、verbatimは網掛けしたブロックとした
+	・Blockにbeginpaddingを指定したとき、枠線の大きさが正しくない不具合を修正
+	・Perl5.8のXPDFJでアウトライン名が正しく出力されない不具合を修正
+	・サンプルスクリプトbarcode.plとqrcode.plを追加
+
+2004/7/17 - 0.76
+	・Perl5.6で暗号化に失敗する不具合を修正
+	・デフォルトで設定する文書情報にModDateを追加
+
+2004/8/20 - 0.77
+	・テキストスタイルでboldやitalicを指定した結果使われたTrueTypeフォントの文字が埋め込まれない不具合を修正
+	・XPDFJで、<def…attributesname="attr" contentsmode="arg">の時に内容から得られた引数が$Args{attr}に含まれない不具合を修正
+	・ブロックスタイルに、bfloatsepとefloatsepを追加
+	・floatにbN,eN（Nは1～9）を指定して優先順位付きグループ化できる
+	・stddefs.incに<BODY><B><I><U><SUP><SUB><H1><H2><H3><H4><DL><DT><DD><DIV><NEWPAGE><SKIP><IMG><SHAPE><LINE><BOX><CIRCLE><ELLIPSE><POLYGON><SHAPEOBJ>を追加
+	・stddefs.incの<TABLE>で列毎のcellbox,align指定ができるようになった
+	・article.incを追加
+	・text2pdf.plは、単にベタ打ちするのでなく、規則によって整形するようになった
+
+2004/8/30 - 0.78
+	・標準Type1フォントの字幅テーブルがエンコーディングを反映するようになり、0x80以降の欧文文字も正しく表示されるようになった
+	・上記のためにPDFJ/Type1.pmを追加した
+	・PDFJ::Shape::polygonとPDFJ::Shape::objで描画範囲の管理がおこなわれるようになった
+	・PDFJ/Shape.pmを追加した（arrow()、brace()、bracket()、paren()）
+	・stddefs.incから図形関係のマクロをshape.incに独立させ、<BOUNDARY><ARROW><BRACE><BRACKET><PAREN>を追加
+	・XPDFJで、<for>は値を返すようになった
+	・XPDFJで、<def…attributesname="attr">の時にデフォルト引数が$Args{attr}に含まれない不具合を修正
+	・XPDFJで、attributesで与えた属性と通常の属性が同名の場合、通常の属性を優先するように変更
+
+2004/9/5 - 0.79
+	・エンコーディングに中国語（簡体、繁体）、韓国語のユニコードエンコーディングを追加
+	・PDFJ::JFontクラスの名前をPDFJ::CIDFontに変更し、new_std()とnew_ttf()を上記エンコーディングに対応するように変更
+	・PDFJ/U2C.pmに中国語（簡体、繁体）、韓国語の変換テーブルを追加
+	・テキストスタイルにcodeを追加
+	・stddefs.incにCHARを追加
+	・WinMacEnc.xpとWinMacEnc.pdfを追加
+
+2004/10/15 - 0.80
+	・PDFJ::Shape::arc()メソッドを追加
+	・shape.incにARCを追加
+	・EUC-H,EUC-Vをベースに13,89-92区を加えたEUC-NEC-H,EUC-NEC-Vを追加
+
+2004/10/30 - 0.81
+	・Unicodeエンコーディングのフォントを使ったテキストオブジェクトを繰り返し配置するとascii文字のレイアウトが崩れる不具合を修正
+	・boldやitalic指定したascii文字の位置がずれることのある不具合を修正
+	・PDFJ::Doc::print()の引数にファイルハンドルを与えることができるようにした
+	・PDFJ::Doc::new_page()で、全画面表示時の表示秒数と画面移行効果を指定できるようにした
+	・Null()を追加。表示上は無意味だがその位置で改行可能となる
+	・Space()を追加。指定の大きさの空白
+	・スタイルを文字列で与える時、[]で配列参照を指定できるようにした
+	・OutlineとDestオブジェクトの内部での文字クラスを11から18に変更
+	・OutlineとDestオブジェクトがページに配置されるときにその名前やレベルとページ位置との対応を文書オブジェクトに保存し、Doc::outlinetree()、Doc::destpage()、Doc::destnames()で読み出せるようにした
+	・図形スタイルのlink属性で[ページオブジェクト,X位置,Y位置]および「PAGE:ページ番号,X位置,Y位置」という指定が可能に
+	・PDFJ::NewLine::new()の引数にレベルを指定できるようにした
+	・PDFJ::NewLine::level()を追加
+	・PDFJ::Doc::insert_page()を追加。ページが途中に挿入できるようになった
+	・XPDFJで、doのwithtext属性は%Argsに入らなかったのを入るようにした
+	・XPDFJで、returnはdef直下でなくてもよいようにした
+	・XPDFJで、withtext="autonl:1"のようにautonlで自動挿入されるNewLineのレベルを指定できるようにした
+	・stddefs.incで、PとLIにforeachline属性を追加、MLIを追加
+	・stddefs.incで、Pのalignでb,m,eが働かない不具合を修正
+	・stddefs.incで、HEADER、FOOTERを追加
+	・stddefs.incで、BODYにpage,hfpage属性を追加
+	・stddefs.incで、HXOUTLINEを追加。H1～4をアウトラインにすることを指示できる
+	・stddefs.incで、TABLEにindent属性を追加
+	・stddefs.incで、TRにpostnobreak属性を追加
+	・目次マクロtoc.incを追加（まだ実験的段階）
+
+2004/11/8 - 0.82
+	・TrueTypeフォントを縦書きしたときに句読点や括弧などが縦書き用字形にならない不具合を修正（mortテーブルを参照）
+	・全角半角混在の縦書きテキストにitalicを指定すると正しくレイアウトされない不具合を修正
+	・UTF8,UNICODEのときは0x7fまででなく0xffまで欧文フォントにあてる（WinAnsiEncoding）
+	・段落スタイルのpreskipとpostskipに%指定ができるようになった
+	・PDFJ::Docにsetoption()とgetoption()メソッドを追加
+	・文書オブジェクトのmissdestオプションで存在しないリンク先の処理を変更できる
+	・PDFJ::Pageにsetattr()とgetattr()メソッドを追加（属性のセットと取得）
+	・テキストスタイルにpageattrを追加（配置ページの属性に名前と値の組をセット）
+	・stddefs.incで、Hxにheader,footer属性を追加（HEADER,FOOTER,BODYと連携してヘッダフッタを指定）
+
+2005/2/8 - 0.83
+	・文書オブジェクトのfilter属性がfを含む場合（デフォルト）、ページ内容のストリームもdeflateで圧縮する
+	・段落スタイルのalignも配列参照で指定できる
+	・テキストスタイルにbeginindent、endindent、alignを指定すると、段落作成時にそこ（beginindentは次行、endindent、alignはその行）で指定の値に切り替わる
+	・Null()の引数でテキストスタイルを指定できる
+	・テキストスタイルにfilltextを追加（その前に自動的に取られた空白を指定の文字列で埋める）
+	・Space()の第三引数にテキストスタイルを指定できる
+	・BlockSkip()はSpace()を呼び出すだけになり、PDFJ::BlockSkipクラスは廃止された
+	・ブロックスタイルのpreskip/postskipに'c'を指定すると先頭/末尾要素のものを使う
+	・表示可能オブジェクトにtypenameメソッドを追加（オブジェクトにタイプ名を与える/得る）
+	・段落、ブロック、図形の各スタイルにtypenameを追加
+	・表示可能オブジェクトのpreskip、postskipに、タイプ名=>スキップ量のハッシュ参照を与えることができ、ブロック要素間の間隔がそれによって計算される
+	・XPDFJで、<hash>を追加した
+	・XPDFJで、<do>にtag属性を追加した
+	・XPDFJで、<alias>のtagとaliasofが同じ時は省略時属性値のセットとする
+	・XPDFJで、<eval>でのsortを許可した
+	・XPDFJで、<for>の内容がローカルモードで実行されていたのを通常モードに変更
+	・stddefs.incで、<BODY>にcols、colskip、evenpagesの各属性を追加
+	・stddefs.incで、<HXNUMBER>を追加、<Hx>にnonumber属性を追加
+	・stddefs.incで、<HEADER><FOOTER>にhr属性を追加
+	・stddefs.incで、<Hx>にpstyle、tstyle、alt属性を追加
+	・stddefs.incで、<Hx>のheader*、footer*属性に'*'を指定すると見出しテキストと同じ
+	・stddefs.incで、<TD>にcolspan属性を追加
+	・stddefs.incで、<DIV>のpreskip,postskip属性が省略されたら'c'にする
+	・stddefs.incで、<UL><OL><DL>のpstyle属性も$PStyle{default}にcloneされるようになった
+	・stddefs.incで、<Hx>のpreskip、postskipを調整
+	・index.incを追加
+	・toc.incで、長い表題にも対応、<TOC>の属性を整備
+	・text2pdf.plで、テキストを常にEUCに変換して扱うようにし、テキストのコードを指定するオプション引数-s,-eを追加
+	・text2pdf.plで、指定のパターンに対してスタイルを指定できる特殊見出しを追加
+	・text2pdf.plで、固定ピッチ段落ではnoglueスタイルを指定し半角空白は半角幅の空白オブジェクトにする
+	・pod2pdf.plで、シフトJISもEUCに変換して扱うようにし、コードを指定するオプション引数-s,-eを追加
+
+2005/2/19 - 0.84
+	・PDFJのクラス名の文字列からテキストオブジェクトを作成するとエラーになる場合がある不具合を修正
+	・和文フォントのASCII文字にitalic指定したときslantにならない不具合を修正
+	・ブロックスタイルのbeginpaddingを廃止
+	・表示可能オブジェクトの各スタイルにblockalignを追加（配列ブロック内での配置指定、b,m,e,数値）
+	・PDFJ/Matrix.pmによって行列ブロック（HV,RV,VH,VR）を追加（従来のブロックは配列ブロックと呼ぶ）
+	・PDFJ/Tree.pmによってツリーブロック（TH,TR,TV,TU）を追加
+	・XPDFJで、<do>にresult="arrayref"を追加（配列参照で結果を返す）
+	・XPDFJで、<def>にcontentsmode="replace"を追加（実行時の属性と内容を無視してソースレベルで定義内容に置換）
+	・XPDFJで、<return>にarrayref属性を追加（配列でなく配列参照で結果を返す）
+	・stddefs.incで、<TABLE>は行列ブロックを使うように変更
+	・stddefs.incで、<TD>にrowspan属性を追加
+	・stddefs.incで、<TABLE>や<TR>で指定したtstyleが<TH>で無効になる不具合を修正
+	・stdfontsH.incとstdfontsV.incで、minchoとgothicのitalicとboldを設定していなかったのを修正
+	・ツリーブロックのサンプルスクリプトpdfjclass.plを追加
+
+2005/2/27 - 0.85
+	・PDFJ::Doc::new_font()で、組フォントでの欧文フォントの和文フォントに対するサイズ比率を指定できるようにした
+	・stdfontsH.incとstdfontsV.incで、asize属性に従って組みフォントのasizeを指定するようにした
+	・stddefs.incに、asize属性を追加（デフォルトは1.05）
+	・stddefs.incで、<TD>のrowspan属性を指定するとcellwidthで指定したセル幅がずれて適用される不具合を修正
+
+2005/3/13 - 0.86RC2
+	・PDFJ::Doc::print()に、オープン済みのハンドルを与えた場合に、出力後にそれを閉じてしまう不具合を修正
+	・和欧混在や行頭禁則文字などを含んだ親文字列にルビが付けられない不具合を修正
+	・親文字列より長いルビが隣接する平仮名などにルビ１文字分以内で重なるようにした。これを抑制するフラグ$PDFJ::Default{NoRubyOverlap}を設けた
+	・ルビより短い親文字列の配置をJIS X 4051準拠に
+
+2005/3/29 - 0.86RC3
+	・行列ブロックで、先頭行でcolspanを指定した時にハングする不具合を修正
+	・stddefs.incで、先頭行の<TD>にcolspanを指定した時にエラーになる不具合を修正
+
+2005/4/3 - 0.86
+	※0.86RC3をそのまま0.86としてリリース
+
+2005/11/10 - 0.87RC1
+	・段落スタイルのlinefeedにオブジェクトと隣行との最低間隔を指定するsオプションを付加できるようにした
+	・テキストスタイルnoshiftを追加
+	・text2pdf.plで固定ピッチ段落にはnoshiftを指定
+	・XPDFJでverboseとdebuginfoの値を$Args{'XPDFJ:verbose'}と$Args{'XPDFJ:debuginfo'}にセットするようにした
+	・stddefs.incで、ページ番号のprintはverbose値が0以上の場合にした
+
+2005/12/3 - 0.87RC2
+	・段落スタイルに、行内オブジェクトを段落境界内とするobjinboundsを追加
+	・段落スタイルlinefeedにsオプションを指定したときはobjinboundsを自動的に1に
+
+2005/12/9 - 0.88RC1
+	・OpenTypeフォントに対応（TrueTypeと同様に埋め込む。CIDフォントはサブセットで）
+	・文書オブジェクトに登録されても文書中で使用されなかったフォントは出力に含めないようにした
+
+2005/12/13 - 0.88RC2
+	・和文フォントでユニコードをCIDに変換する際、92(5c)を8719でなく291に、126(7e)を325でなく631に変更。OpenTypeフォントでCID8719と325の字形を持たないものがあるため
+
+2006/1/27 - 0.88
+	※0.88RC2をそのまま0.88としてリリース
+
+2006/2/9 - 0.89RC1
+	・ミニページオブジェクトを作成するPDFJ::Doc::new_minipage()を追加
+	・PDFJ::Formによる対話フォーム機能を追加
+	・circleやellipseで四半円にf指定すると弦で囲まれるのを半径で囲まれるように変更
+	・テキストスタイルにcontentmarkを追加
+	・XPDFJで、<require module="…"/>でモジュールのrequireができるようにした
+	・XPDFJで、$Args{'PDFJ:VERSION'}と$Args{'XPDFJ:VERSION'}をセットするようにした
+	・stddefs.incで、テーブルの属性にvalignを追加
+	・sampleにPDFJフィードバックシートfeedback.xpを追加
+
+2006/4/28 - 0.90RC1
+	・use PDFJ;を複数回行うと必要なサブルーチンが正しくエクスポートされない不具合を修正
+	・PNG対応
+
+2006/5/1 - 0.90RC2
+	・表示できないPNGがあった不具合を修正
+
+2006/10/22 - 0.90
+	※0.90RC2をそのまま0.90としてリリース

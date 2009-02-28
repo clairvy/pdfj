@@ -1,0 +1,612 @@
+=head1 NAME
+
+XPDFJ - 日本語PDF生成モジュールPDFJのXMLフロントエンド
+
+=head1 SYNOPSIS
+
+  use XPDFJ;
+  $xpdfj = new XPDFJ;
+  $xpdfj->parsefile($xmlfile, outfile => $pdffile);
+
+=head1 DESCRIPTION
+
+=head2 概要
+
+XPDFJは、XML形式で書かれた原稿からPDFJを用いてPDFを生成する。
+
+XMLの要素がPDFJのサブルーチンやメソッドの呼び出しに直接変換されるほか、実行結果を変数に格納して後で利用したり、補助的にPerlスクリプトを埋め込むこともできるので、PDFJを使って直接スクリプトを書くのに近い細かな制御がおこなえる。
+
+また新たなタグを定義できるマクロ機能もあり、 <UL><OL><LI><TABLE><TR><TD><HR>などのHTMLライクなタグを定義したファイルが用意されている。
+
+=head2 使用法
+
+以下で説明する規則に従って原稿となるXMLデータを用意し、
+
+  $xpdfj = new XPDFJ;
+
+としてXPDFJオブジェクトを作成し、
+
+  $xpdfj->parse($xmldata);
+  $xpdfj->parsefile($xmlfile);
+
+のいずれかの方法で、XMLデータを処理する。
+
+  $xpdfj->parsefile($xmlfile, outfile => $outfile);
+
+のようにハッシュリストの形で追加の引数を与えると、そのXMLデータを実行するときに%Argsというハッシュにセットされる。この例のようにしておいて、XMLデータで <print file="$Args{outfile}"/> とすれば、生成されたPDFが$outfileに出力されることになる。
+
+  $xpdfj = new XPDFJ(dopath => '/usr/local/XPDFJ;/usr/local/PDFJ');
+
+のように、XPDFJオブジェクトを作成するときにdopathという引数を与えると、 <do file>するときにそのパスからファイルが検索される。セミコロン区切りであることに注意。
+
+  $xpdfj = new XPDFJ(debuginfo => 1, verbose => 2);
+
+のようにdebuginfoを真に指定すると、後述する<debuginfo>が有効になる。verboseを1または2にすると内部的な実行状況が表示される。
+
+debuginfoとverboseは、
+
+  $xpdfj->debuginfo(1);
+  $xpdfj->verbose(2);
+
+のようにして必要なときにセットすることもできる。
+
+=head2 XMLデータの基本構成
+
+XPDFJの原稿となるXMLデータは、整形式XMLであり、ルート要素はXPDFJでなければならない。
+
+  <?xml version="1.0" encoding="x-sjis-cp932"?>
+  <XPDFJ version="0.1">
+  …
+  </XPDFJ>
+
+XMLデータはXML::Parserモジュールによって読み取られる。日本語を含む場合は上記の例のように先頭のXML宣言で文字コードに応じた適切なエンコーディングを指定しなければならない。
+
+<XPDFJ version="0.1">とバージョンを指定すると、XPDFJのバージョンがそれよりも小さければエラーとなって実行できない。
+
+XPDFJでは、あるXMLデータを処理中に、その中で指定された他のXMLファイルを読み込む機能がある。この機能によって読み取られるXMLファイルの場合は、整形式であればよく、ルート要素はXPDFJでなくてよい。
+
+※今のところ、XPDFJ用のDTDなどは用意されていない。
+
+=head2 XML要素の扱い
+
+XMLデータ中の各要素およびテキストは、次の規則に従って処理される。
+
+※以下の説明で、「ワード」は半角の英字またはアンダースコアではじまり、英数字またはアンダースコアからなる文字列のことを意味する。
+
+=over 4
+
+=item *
+
+空白文字だけからなり改行を含むテキストはすべて無視される
+
+=item *
+
+ルート要素であるXPDFJ要素の内容は、順にメソッドモードで処理される
+
+=item *
+
+メソッドモードでは、テキストは無視される
+
+=item *
+
+メソッドモードでは、要素は、要素名がマクロ定義されたタグに合致すればその定義にしたがって処理され、内部関数名に合致すれば内部関数として、大文字で始まるワードであればサブルーチンとして、小文字で始まるワードであればメソッドとして扱われ、実行される。そしてその実行結果のリストが返される
+
+=item *
+
+要素がマクロ定義されたものの場合には、その属性や内容の扱いはその定義による（下記のマクロ定義の説明を参照）
+
+=item *
+
+要素が内部関数として扱われる場合には、その属性や内容の扱いは内部関数による（下記の各内部関数の説明を参照）
+
+=item *
+
+要素がサブルーチンまたはメソッドとして扱われる場合には、属性はそのまま、内容は引数モードで処理されて、一つのハッシュにまとめられ、そのハッシュ参照がサブルーチンまたはメソッドの引数として与えられて実行される（いくつかある特殊扱いの引数については後述）
+
+=item *
+
+要素がメソッドとして扱われる場合、呼び出し元のオブジェクトは通常はDocオブジェクトとなる（それ以外のオブジェクトを指定する方法は後述）
+
+=item *
+
+引数モードでは、テキストは無視される
+
+=item *
+
+引数モードでは、要素は、要素名が引数名となり、内容がテキストのみならその文字列が引数値となり、そうでなければ内容をメソッドモードで順次実行した実行結果のリストが引数値となる。（リストが１要素の場合はその値、２要素以上の場合は配列参照として）引数値が文字列で、それがスカラ変数名やハッシュ要素名であればその値に置き換えられる
+
+=back
+
+この説明だけではわかりにくいので、例をあげる。
+
+  <XPDFJ version="0.1">
+    <Doc version="1.3" pagewidth="595" pageheight="842"/>
+    <Text>
+      <texts>テキスト</texts>
+      <texts>text</texts>
+      <style>
+        <TStyle fontsize="10">
+          <font>
+            <new_font basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-H"/>
+          </font>
+        </TStyle>
+      </style>
+    </Text>
+  </XPDFJ>
+
+XPDFJルート要素の内容は（テキストは無視されて）<Doc>と<Text>である。これがメソッドモードで順次処理される。
+
+<Doc>は空要素なので、属性がそのまま引数となり、Doc({version => "1.3", pagewidth => "595", pageheight => "842"}); と実行される
+
+<Text>は属性がないので、内容である<texts><texts><style>が引数モードで処理されて引数となる。 <texts>は二つあっていずれもテキストのみが内容なので、その内容のリストの配列参照が値となる。 <style>の内容は<TStyle>なのでその実行結果、つまりテキストスタイルオブジェクトが値となる。
+
+<new_font>は小文字で始まるのでメソッド呼び出しであり、呼び出し元メソッドはDocオブジェクトとなる。
+
+結局上記のXMLデータを処理すると、次のスクリプトが実行されるのと同じことになる。
+
+  $Doc = Doc({version => 1.3, pagewidth => 595, pageheight => 842});
+  Text({
+    texts => ['テキスト', 'text'], 
+    style => TStyle({
+      fontsize => 10, 
+      font => $Doc->new_font({basefont => 'Ryumin-Light',
+        encoding => 'UniJIS-UCS2-HW-H'})
+      })
+    });
+
+=head2 特殊扱いの引数
+
+要素がサブルーチンまたはメソッドとして実行されるとき、次の引数は特別な扱いとなり、サブルーチンまたはメソッドの引数としては渡されない。
+
+=over 4
+
+=item setvar
+
+サブルーチンまたはメソッドの実行結果を格納する変数名を指定する。変数名としては、スカラ変数名またはハッシュ要素名が指定できる。
+
+  <new_font setvar="$Font{mincho}" basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-H"/>
+  <TStyle setvar="$TStyle{normal}" font="$Font{mincho}" fontsize="10"/>
+  <Text setvar="$text1" texts="テキスト" style="$TStyle{normal}"/>
+
+のようなことができる。
+
+=item call
+
+サブルーチンまたはメソッドの実行結果を呼び出し元オブジェクトとして実行したい内容を指定する。
+
+  <PStyle setvar="$PStyle{normal}" size="200" align="w" linefeed="150%">
+    <call>
+      <clone setvar="$PStyle{indent}" begginpadding="30"/>
+      <clone setvar="$PStyle{note}" labeltext="※" labelsize="10"/>
+    </call>
+  </PStyle>
+
+二つの<clone>は普通であればDocオブジェクトを呼び出し元オブジェクトとして実行されるが、ここでは<call>の内容となっているので、その親である<PStyle>の実行結果である段落スタイルオブジェクトを呼び出し元として実行される。
+
+サブルーチンまたはメソッドの実行結果がリストであれば、その各要素を順次呼び出し元として繰り返し実行される。
+
+  <break caller="$blockobj" sizes="200">
+    <call>
+      <new_page caller="$Doc" setvar="$page"/>
+      <show page="$page" x="10" y="10" align="bl"/>
+    </call>
+  </break>
+
+この例はブロックオブジェクト$blockobjをサイズ200でbreakし、その結果の各ブロックオブジェクトを新たなページに配置している。
+
+=item caller
+
+メソッドの場合のみ特別扱いとなり、呼び出し元オブジェクトを指定する。
+
+上記の例は次のように書くこともできる。
+
+  <PStyle setvar="$PStyle{normal}" size="200" align="w" linefeed="150%"/>
+  <clone setvar="$PStyle{indent}" caller="$PStyle{normal}" begginpadding="30"/>
+  <clone setvar="$PStyle{note}" caller="$PStyle{normal}" labeltext="※" labelsize="10"/>
+
+=item attributes
+
+attributes属性にハッシュ参照を与えると、そのハッシュの内容が属性として扱われる。次の例のように、属性をまとめて変数にセットしておいて与えることができる。
+
+  <eval>$attr = {size => 200, align => 'w', linefeed => '150%'}</eval>
+  <PStyle setvar="$pstyle" attributes="$attr"/>
+
+attributesで与えた属性と通常の属性に同名のものがある場合、通常の属性が優先される。例えば上記の例で$attr->{setvar}が存在してもsetvar="$pstyle"が優先される。
+
+=back
+
+※暗黙のメソッド呼び出し元がDocオブジェクトになるのは、 <Doc>の呼び出し時に自動的にsetvar="$Doc"が付加され、メソッドでcallerが省略されるとcaller="$Doc"となる、という仕組みになっている。
+
+=head2 変数
+
+変数は、Perlのスカラ変数かハッシュ要素のみである。つまり、$variableか、$Hash{key}の形だけが変数とみなされる。また、変数を属性値や要素の内容として指定するときは前後も含めて余計な空白を入れると変数として扱われないので注意すること。（この制約は将来緩和されるかもしれない。）
+
+変数は後述する<eval>や<reval>の中のPerlコードで操作することも可能である。
+
+%Argsというハッシュは、parse()やparsefile()メソッドの引数に与えたハッシュがセットされる他、マクロ定義されたタグが実行される時や、追加の属性のある<do>の実行の際に、属性の名前と値が自動的にセットされる。そのタグや<do>の実行が終わると%Argsの状態は実行前の状態に戻る。
+
+%Argsには、verbose値とdebuginfo値もそれぞれ$Args{'XPDFJ:verbose'}と$Args{'XPDFJ:debuginfo'}としてセットされる。また、PDFJとXPDFJのバージョンが$Args{'PDFJ:VERSION'}と$Args{'XPDFJ:VERSION'}にセットされる。
+
+%Args以外の変数は全てグローバルである。局所化したい場合は、ローカルモード（後述）内で<local>を用いる。
+
+<eval>や<reval>の中ではmy変数が使えるが、その中だけで有効。
+
+=head2 内部関数
+
+XPDFJに対する指示を表す内部関数には次のものがある。
+
+=over 4
+
+=item <require>
+
+<require XPDFJ="0.12"/>のようにすれば、XPDFJのバージョンが指定した値以上であるかどうかをチェックする。
+
+<require module="PDFJ::Form"/>のようにすれば、指定のモジュールをrequireで読み込む。
+
+=item <eval>
+
+内容をPerlのコードとして実行する。変数の状態はそのXMLデータを処理しているXPDFJオブジェクトが生きている間は保持されている。useやrequireなど外部を呼び出すコードは実行できない。printは可能なので、進行状況を表示したりできる。
+
+<eval>自体は何も結果を返さない。
+
+  <eval>
+    $PStyle{default} = $PStyle{normal};
+    $counter++;
+    print "counter: $counter\n";
+  </eval>
+
+=item <reval>
+
+<eval>と同様にPerlのコードを実行するが、 <reval>はその結果を返す。
+
+=item <hash>
+
+属性と内容を引数モードで処理した結果をあわせたハッシュへの参照を返す。
+
+=item <for>
+
+属性evalの値を評価した結果のリストまたは配列参照の各要素を、属性setvarで指定された変数に順次入れながら、内容を繰り返す。
+
+  <for setvar="$var" eval="(1, 2, 3)">
+    <eval>print "$var\n"</eval>
+  </for>
+
+<for>は内容が返した結果のリストを返す
+
+=item <do>
+
+属性で与えたさまざまな条件に従って内容を実行する。指定できる属性が多岐に渡るので、下記の別項で説明する。
+
+=item <local>
+
+変数値を局所化する。setvarで指定された変数の値を保存し、evalが指定されていればその評価結果をセットする。保存された値は、ローカルモードの<do>やマクロ定義されたタグを抜ける時に元に戻される。
+
+  <local setvar="$counter" eval="1"/>
+
+<local>自体は何も結果を返さない。
+
+=item <sub>
+
+その内容を実行するサブルーチン参照を返す。PDFJでは段落スタイルのlabeltextにサブルーチン参照を与えると、毎回それを実行した結果のテキストオブジェクトをラベルとする、という機能がある。このために使用する。
+
+  <sub>
+    <Text style="$s_normal">
+      <texts>$counter</texts><texts>.</texts>
+    </Text>
+    <eval>$counter++</eval>
+  </sub>
+
+=item <def>
+
+新たなタグを定義するマクロ定義命令。 <def>の機能は複雑なので、下記の別項で説明する。
+
+=item <alias>
+
+要素名に別名を付けるマクロ定義命令。tag属性で指定した名前を、aliasof属性で指定した名前の別名とする。それ以外の属性を与えると、追加の属性となる。
+
+  <alias tag="BR" aliasof="NewLine"/>
+
+このように定義されていると、<BR/> は <NewLine/> に置き換えられる。
+
+  <alias tag="TH" aliasof="TD" align="center"/>
+
+このように定義されていると、 <TH> は <TD align="center"> に置き換えられる。
+
+ただしaliasで置き換えられるのは、メソッドモードでの要素名のみであり、引数モードでの要素名は対象とならない。
+
+また、tag属性とaliasof属性に同じ名前を指定した場合は別名定義でなく、その名前のタグに対する省略時属性値の指定となる。
+
+  <alias tag="HR" aliasof="HR" size="1"/>
+
+このように定義されていると、<HR/>と呼び出した時のsizeは1になる。
+
+<alias>自体は何も結果を返さない。
+
+=item <debuginfo>
+
+XPDFJ->new()の引数でdebuginfoを真に指定していると、デバッグ用に現在の変数とその値の一覧を表示する。pattern属性を指定すると、正規表現としてそのパターンにマッチする変数名のみが対象になる。
+
+  <debuginfo pattern="Args"/>
+
+<debuginfo>自体は何も結果を返さない。
+
+=back
+
+=head2 <do>による実行
+
+<do>は、属性で与えたさまざまな条件に従って内容を実行する。属性には次のものを指定できる。
+
+=over 4
+
+=item if
+
+その値を評価した結果が真なら実行する
+
+  <do if="$page->pagenum > 1"/>
+    …
+  </do>
+
+=item unless
+
+その値を評価した結果が偽なら実行する
+
+=item tag
+
+その値のタグを呼ぶ。次の二つは同じ
+
+  <do tag="P" align="center">…</do>
+  <P align="center">…</P>
+
+=item caller
+
+省略時の呼び出し元オブジェクトを指定する
+
+  <do caller="$PStyle{normal}">
+    <clone setvar="$PStyle{indent}" begginpadding="30"/>
+    <clone setvar="$PStyle{note}" labeltext="※" labelsize="10"/>
+  </do>
+
+=item setvar
+
+実行結果をセットする変数名（次のresultの指定にかかわらず、 <do>の内容の実行結果がセットされる）
+
+=item result
+
+<do>自体の返す値の指定：first:実行結果リストの最初の要素、last:実行結果リストの最後の要素、arrayref:実行結果リストを配列参照として、null:何も返さない、変数名:その変数値
+
+メソッドモードで、変数にセットしたいだけで結果は必要ないときは、次のようにすればよい。
+
+  <do result="null">
+    <new_font setvar="…/>
+    <PStyle setvar="…/>
+    <clone setvar="…/>
+  </do>
+
+=item file
+
+その値の外部ファイルを読み込んで内容として実行する（<do>自体の内容は無視される）
+
+  <do file="stddefs.inc"/>
+
+XPDFJオブジェクトを作成するときに、dopath引数を指定していれば、そのパスからファイルが検索される。
+
+※原稿のXMLがシフトJISやEUCで書かれていても、XMLパーサーで読み込まれた段階でユニコードに変換されて、以後はユニコードで処理される。外部ファイル名に日本語を使った場合もユニコードで扱われるために、ファイルが見つからないというエラーになる。この問題は将来解決される予定であるが、今のところはXPDFJで読み込むファイル名には日本語を使わないようにしていただきたい。<new_font basefont="…" …/>でTrueTypeやOpenTypeフォントファイル名を指定する場合も同様。
+
+=item contents
+
+その値を内容として実行する（<do>自体の内容は無視される）。 <def>のcontentsmode="raw"と組み合わせて使用する。
+
+実行時の%Argsは、実行される内容が書かれていた場所での%Argsがベースとなる。
+
+=item withtext
+
+内容を実行するとき通常はテキストは無視されるが、withtextに「text」を指定するとテキストも結果リストに含まれる。withtextに「autonl」を指定すると、テキスト中の改行をNewLineオブジェクトに置き換える
+
+=item local
+
+localを真に指定すると、ローカルモードで内容を実行する（<local>を使って変数値を局所化できる）
+
+=item verbose
+
+デバッグ用の進行状況表示フラグ（1または2）をセットする
+
+=back
+
+以上のもの以外の属性を与えると、それは<do>の内容の実行開始時に%Argsに追加セットされる。（例外としてwithtext属性は%Argsにセットされる。）そして<do>の内容はローカルモードで実行され、%Argsの内容は<do>の実行終了時に開始時の状態に戻される。
+
+=head2 <def>によるマクロ定義
+
+<def>は新たなタグを定義するマクロ定義命令。tag属性で指定されたタグを定義する。定義されたタグが実行される時には、 <def>の内容がローカルモードで実行される。実行開始時に <def>の属性と実行時の属性とが%Argsに追加セットされ、%Argsの内容は終了時に戻される。実行時の内容がどう扱われるかは、下記のcontentsmode指定による。
+
+<def>それ自体は何も結果を返さない。
+
+<def>の属性の値に変数を指定すると実行時に評価される。 <def>の属性と同名の属性を実行時に指定すると実行時の属性が優先される。
+
+例をあげる。
+
+  <def tag="Header" size="15">
+    <return>
+      <Text texts="$Args{text}">
+        <style><clone caller="$TStyle{normal}" fontsize="$Args{size}"/></style>
+      </Text>
+    </return>
+  </def>
+
+このように定義されたときに、
+
+  <Header text="はじめに"/>
+
+を実行すると、結果として次のものが実行されることになる。
+
+    <Text texts="はじめに">
+      <style><clone caller="$TStyle{normal}" fontsize="15"/></style>
+    </Text>
+
+  <Header text="はじめに" size="20"/>
+
+とすると<def>でのsize="15"が上書きされて、次のものが実行されることになる。
+
+    <Text texts="はじめに">
+      <style><clone caller="$TStyle{normal}" fontsize="20"/></style>
+    </Text>
+
+<def>で定義されたタグが実行されるときは、 <return>の内容のみが結果となり、それ以外の部分が返すものは無視される。（従って<return>以外の部分で、値を必要としない部分を<do result="null">で囲んだりする必要はない。）
+
+<return>は<def>の中で一度だけ指定できる。 <return>は<def>の中でのみこの特別な意味を持つ。 <return>を<def>の外で使うとreturnというメソッド呼び出しと解釈され、そういうメソッドを持つオブジェクトはPDFJにはないので、エラーとなる。
+
+※contentsmode="replace"を指定したときは<return>の扱いが異なる（後述）。
+
+この例では<Header>の実行時の内容は使われていないが、実行時の内容を使うような定義をすることもできる。
+
+<def>の属性としては、次のものが指定できる。
+
+=over 4
+
+=item tag
+
+定義するタグ名を指定する
+
+=item attributesname
+
+実行時の属性（＝定義されたタグ名の要素の属性）（contentsmode="arg"の時は引数モードで処理された内容も含めて）をまとめてハッシュ参照とし、引数として%Argsで渡したいときにその名前を指定する。 <def>の内容では、attributesという属性にその$Args{…}変数を指定すればよい。
+
+=item contentsmode
+
+実行時の内容（＝定義されたタグ名の要素の内容）をどのように扱うかを指定する。省略すると"raw"と見なされる。
+
+replace: 実行時の属性と内容はすべて無視されて、定義されたタグとその内容を定義内容にソースレベルで置き換える。（<return>内だけが置換内容になるわけではなく、定義内容全体が置換内容となることに注意。）
+
+raw：処理せずにXML::Parserが返した配列参照（ただし属性のハッシュ参照は取り除かれている）のまま、その時点のローカルモードのレベル数とともに、contentsnameで指定した名前の引数とする。この値は、 <do>のcontents属性の値として与えれば処理して結果を得ることができる。
+
+arg：引数モードで処理されて、属性と合わせて引数となる
+
+method：メソッドモードで処理して、その結果の配列参照を、contentsnameで指定した名前の引数とする
+
+text：methodと同様だが、テキストを無視せず結果に含める
+
+autonl：textと同様だが、テキスト内の改行をNewLineに変換する
+
+replaceとraw以外の場合は、 <def>の内容が処理される前に実行時の内容が処理されて、 <def>の内容が処理される時の引数となる。rawの場合は、 <def>の内容が処理される時に実行時の内容は処理されておらず、 <def>の内容の中で自分で<do contents=...>で処理することになる。
+
+replace以外で定義したタグはメソッドモードでのみ有効だが、replaceで定義したタグはソースレベルで置換されるので引数モードでも有効である。
+
+=item contentsname
+
+contentsmodeにchunk以外を指定したときに、内容の処理結果が渡される引数の名前を指定する。省略すると"contents"となる。
+
+=back
+
+contentsmodeを指定した例をあげる。
+
+  <def tag="Style" contentsname="text" contentsmode="autonl" attributesname="attr">
+   <return>
+    <Text>
+      <texts>$Args{text}</texts>
+      <style><TStyle attributes="$Args{attr}"/></style>
+    </Text>
+   </return>
+  </def>
+
+このように定義されたときに、
+
+  <Style withline="1">下線<Style italic="1">下線で斜体</Style></Style>
+
+と実行されると、まず外側の<Style>が置き換えられて、
+
+    <Text>
+      <texts>下線<Style italic="1">下線で斜体</Style></texts>
+      <style><TStyle withline="1"/></style>
+    </Text>
+
+となり、さらに内側の<Style>が置き換えられて、
+
+    <Text>
+      <texts>下線<Text>
+        <texts>下線で斜体</texts>
+        <style><TStyle italic="1"/></style>
+      </Text></texts>
+      <style><TStyle withline="1"/></style>
+    </Text>
+
+となる。
+
+この例を、contentsmodeを指定せずに（rawを指定したと見なされる）書くと次のようになる。
+
+  <def tag="Style" contentsname="text" attributesname="attr">
+   <return>
+    <Text>
+      <texts><do withtext="autonl" contents="$Args{text}"/></texts>
+      <style><TStyle attributes="$Args{attr}"/></style>
+    </Text>
+   </return>
+  </def>
+
+
+=head2 ローカルモード
+
+ローカルモードでタグが実行されるのは、マクロ定義されたタグ（contentsmodeがreplace以外）、 <do>にlocal="1"が指定されたとき、 <do>に追加の属性があるとき、の三つの場合である。
+
+ローカルモードでタグが実行されるときには、開始時に属性が%Argsに追加セットされ、終了時には%Argsは開始時の状態に戻る。また、ローカルモード内で<local>で局所化した変数の値も、終了時に元に戻る。
+
+例えば次のように実行すると、
+
+  <do A="1" B="2">
+    <eval>print "Outer: A=$Args{A} B=$Args{B}\n"</eval>
+    <do A="3">
+      <eval>print "Inner: A=$Args{A} B=$Args{B}\n"</eval>
+    </do>
+    <eval>print "Outer: A=$Args{A} B=$Args{B}\n"</eval>
+  </do>
+
+次のように表示される。
+
+  Outer: A=1 B=2
+  Inner: A=3 B=2
+  Outer: A=1 B=2
+
+<do contents="…">では、contentsで指定された実行内容が書かれた場所での%Argsがベースとなることに注意。例えば次のように実行すると、
+
+  <def tag="T">
+    <eval>print "In  T: A=$Args{A} B=$Args{B}\n"</eval>
+    <return>
+      <do contents="$Args{contents}" B="4"/>
+    </return>
+    <eval>print "In  T: A=$Args{A} B=$Args{B}\n"</eval>
+  </def>
+  <do A="1" B="2">
+    <eval>print "Outer: A=$Args{A} B=$Args{B}\n"</eval>
+    <T A="3">
+      <eval>print "Inner: A=$Args{A} B=$Args{B}\n"</eval>
+    </T>
+    <eval>print "Outer: A=$Args{A} B=$Args{B}\n"</eval>
+  </do>
+
+<T>の中での「<do contents="$Args{contents}" B="4"/>」を実行するとき、$Args{contents}である「<eval>print "Inner: A=$Args{A} B=$Args{B}\n"</eval>」は、 <T>の中の%Argsでなく外の%Argsをベースにして実行されることになる。この結果、次のように表示される。
+
+  Outer: A=1 B=2
+  In  T: A=3 B=2
+  Inner: A=1 B=4
+  In  T: A=3 B=2
+  Outer: A=1 B=2
+
+<def…contentsmode="replace">で定義したタグの場合は、ソースレベルでの置換となり、ローカルモードにはならない。
+
+=head2 注意
+
+XPDFJはαバージョンの状態にあり、その仕様は変わる可能性が大いにある。そのつもりで使っていただきたい。
+
+=head2 サンプル
+
+マクロ定義のサンプルとして、stddefs.inc、stdfontsH.inc、stdfontsV.inc、article.incが添付されている。stddefs.incとarticle.inc自体の中に簡単な説明がある。これらの使い方のサンプルとしては、of2002.xpとarticledemo.xpを参照。
+
+これらのファイルの内容は今後大きく変わる可能性があることに留意して使っていただきたい。
+
+=head1 AUTHOR
+
+中島 靖 
+L<nakajima@netstock.co.jp|"mailto:nakajima@netstock.co.jp"> 
+L<http://hp1.jonex.ne.jp/~nakajima.yasushi/|"http://hp1.jonex.ne.jp/~nakajima.yasushi/">
+
+=head1 SEE ALSO
+
+PDFJ

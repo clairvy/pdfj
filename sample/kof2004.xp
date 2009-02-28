@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<XPDFJ version="0.1">
+<do file="kof2002.inc"/>
+
+<alias tag="RED" aliasof="S" color="#ff0000"/>
+
+<def tag="Header">
+  <return>
+  <NewBlock/>
+  <P tstyle="$TStyle{pagetitle}" pstyle="$PStyle{pagetitle}">
+    <Outline title="$Args{title}"/>
+    <T>$Args{title}</T>
+  </P>
+  <HR width="720" size="2" color="#770000"/>
+  <SKIP skip="10"/>
+  </return>
+</def>
+
+<TStyle setvar="$TStyle{nombre}" font="$Font{normal}" fontsize="15"/>
+<clone setvar="$PStyle{nombre}" caller="$PStyle{default}" align="e"/>
+<def tag="Nombre">
+  <eval>$Args{_pagenum} = $Args{page}->pagenum;</eval>
+  <Paragraph style="$PStyle{nombre}">
+    <text><Text style="$TStyle{nombre}" texts="$Args{_pagenum}"/></text>
+    <call>
+      <show page="$Args{page}" x="75" y="45" align="ml"/>
+    </call>
+  </Paragraph>
+</def>
+
+<alias tag="Note" aliasof="P" pstyle="$PStyle{note}" tstyle="$TStyle{note}"/>
+
+<new_image setvar="$Image{bgimg}" src="kouyou.jpg" pxwidth="1024" pxheight="768" width="842" height="595"/>
+
+<Block direction="V">
+  <style><BStyle/></style>
+  <objects>
+
+<SKIP skip="100"/>
+<P tstyle="$TStyle{whitebigtitle}" pstyle="$PStyle{bigtitle}">
+XPDFJによるレポート・論文PDF作成方法
+</P>
+<P tstyle="$TStyle{whitesmalltitle}" pstyle="$PStyle{smalltitle}">
+中島 靖（Kansai.pm、(株)ネットストック）
+&lt;nakajima@netstock.co.jp&gt;
+</P>
+<P tstyle="$TStyle{whitesmalltitle}" pstyle="$PStyle{smalltitle}">
+2004年10月23日
+関西オープンソース2004<BR/>
+<RED>2005年2月17日加筆修正</RED>
+</P>
+
+<Header title="本日の内容"/>
+<P>
+XPDFJの標準マクロファイルと論文用マクロファイルを使って、レポートや論文のPDFを作成する方法を解説
+</P>
+<UL>
+<LI>PDFJとXPDFJの概要</LI>
+<LI>標準マクロの使い方</LI>
+<LI>論文用マクロの使い方と実例</LI>
+<LI>今後の課題</LI>
+</UL>
+<SKIP skip="20"/>
+<P>
+あらかじめお断り：
+論文作成の方法としてはいくつかの大きな弱点があり、LaTeXにはまだまだ及びません
+</P>
+<SKIP skip="20"/>
+<P>
+本発表はPDFJ0.81にもとづいています<RED>→現在はさらにバージョンが上がっています</RED>
+</P>
+
+<Header title="PDFJとは"/>
+<P>
+日本語PDFを作成するためのPerlのライブラリモジュール
+</P>
+<OL postlabel=")">
+<LI>日本語の組版ルール（禁則、行の詰め伸ばし、ルビ、添え字、縦書き中の欧文、縦中横、下線・傍線、圏点など）</LI>
+<LI>フォントは標準Type1とTrueType（TrueTypeは埋め込み）</LI>
+<LI>テキスト中の画像や線画図形、線画図形中のテキストや画像</LI>
+<LI>箇条書きのためのラベル付き段落</LI>
+<LI>段落、画像、図形などを並べたブロック。入れ子のブロックによる表</LI>
+<LI>ページをまたぐ段落やブロックの分割配置</LI>
+<LI>アウトライン、ハイパーリンク、暗号化</LI>
+</OL>
+<SKIP skip="20"/>
+<P>
+PDFLib、FOP、OpenOfficeと比べてどう？
+</P>
+
+<Header title="XPDFJとは～1"/>
+<P>
+PDFJのXMLフロントエンド
+</P>
+<P>
+PDFJを用いたスクリプトと同等の処理をXML形式で書けるようにする
+</P>
+<UL><MLI>
+PDFJのサブルーチンやメソッド呼び出しをXMLのタグの形で記述
+Perlの変数や式を利用できる
+</MLI></UL>
+<SKIP skip="20"/>
+<OL><MLI>
+XML形式で原稿ファイルを書き
+「perl xpdfj.pl 原稿ファイル」と実行すると
+PDFファイルができる
+</MLI></OL>
+
+<NewBlock/>
+
+<TABLE cellwidth="365" cellpadding="10" cellbox="sf" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{code}" tstyle="$TStyle{small}">
+<TR>
+<TD>
+<P pstyle="$PStyle{code}" tstyle="$TStyle{small}" foreachline="1">
+use PDFJ 'EUC';
+$Doc = Doc({version => 1.3, pagewidth => 595, pageheight => 842});
+$font = $Doc->new_font({basefont => "Ryumin-Light", encoding => "EUC-H"});
+$page = $Doc->new_page;
+Text({texts => 'こんにちは', style => TStyle({font => $font, fontsize => 40})})
+  ->show({page => $page, x => 50, y => 750});
+$Doc->print({file => "sample2.pdf"});
+</P>
+</TD>
+<TD>
+<P pstyle="$PStyle{code}" tstyle="$TStyle{small}" foreachline="1">
+<![CDATA[<?xml version="1.0" encoding="x-euc-jp-jisx0221"?>
+<XPDFJ version="0.2">
+<Doc version="1.3" pagewidth="595" pageheight="842"/>
+<new_font setvar="$font" basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-H"/>
+<new_page setvar="$page"/>
+<Text>
+  <texts>こんにちは</texts>
+  <style><TStyle font="$font" fontsize="40"/></style>
+  <call><show page="$page" x="50" y="750"/></call>
+</Text>
+<print file="sample2.pdf"/>
+</XPDFJ>]]>
+</P>
+</TD>
+</TR>
+</TABLE>
+
+<Header title="XPDFJとは～2"/>
+<P>
+…しかし、スクリプトを単にXML化するだけなら面倒くさいだけ
+</P>
+<P>
+→命令を拡張できるマクロ機能によって、簡潔な記述が可能に
+</P>
+<TABLE cellwidth="365" cellpadding="10" cellbox="sf" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{code}" tstyle="$TStyle{small}" preskip="20">
+<TR>
+<TD>
+<P pstyle="$PStyle{code}" tstyle="$TStyle{small}" foreachline="1">
+<![CDATA[<?xml version="1.0" encoding="x-euc-jp-jisx0221"?>
+<XPDFJ version="0.2">
+<do file="stddefs.inc"/>
+<BODY>
+<P><S fontsize="40">
+こんにちは
+</S></P>
+</BODY>
+<print file="sample2.pdf"/>
+</XPDFJ>]]>
+</P>
+</TD>
+</TR>
+</TABLE>
+
+<Header title="標準マクロstddefs.inc"/>
+<P>
+HTMLライクなマクロ命令を定義
+</P>
+<Note>
+あくまでHTML「ライク」です。属性などかなり違いがあり、既存のHTMLをそのまま使えるわけではありません
+</Note>
+<TABLE cellwidth="40%, 50%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" preskip="20" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+    <TR>
+      <TD>S</TD>
+      <TD>テキストスタイル</TD>
+    </TR>
+    <TR>
+      <TD>B, I, U, SUP, SUB</TD>
+      <TD>太字、斜体、下線、上付、下付</TD>
+    </TR>
+    <TR>
+      <TD>H1～4, P, BR</TD>
+      <TD>見出し、段落、改行</TD>
+    </TR>
+    <TR>
+      <TD>UL, OL, LI, MLI</TD>
+      <TD>箇条書き</TD>
+    </TR>
+    <TR>
+      <TD>DL, DT, DD</TD>
+      <TD>語句説明</TD>
+    </TR>
+    <TR>
+      <TD>TABLE, TR, TD, TH</TD>
+      <TD>表</TD>
+    </TR>
+    <TR>
+      <TD>IMG</TD>
+      <TD>画像</TD>
+    </TR>
+    <TR>
+      <TD>DIV, HR, SKIP, NEWPAGE</TD>
+      <TD>ブロック、横罫線、間隔、改ページ</TD>
+    </TR>
+    <TR>
+      <TD>BODY</TD>
+      <TD>文書内容全体を囲む</TD>
+    </TR>
+</TABLE>
+
+<Header title="標準マクロの使い方～基本パターン"/>
+<P>
+標準マクロstddefs.incを使った原稿の基本パターン
+</P>
+<TABLE cellwidth="100%" cellpadding="10" cellbox="sf" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{code}" tstyle="$TStyle{small}" preskip="20">
+<TR>
+<TD>
+<P pstyle="$PStyle{code}" tstyle="$TStyle{small}" foreachline="1">
+<![CDATA[<?xml version="1.0" encoding="x-euc-jp-jisx0221"?> … XML宣言※
+<XPDFJ version="0.2"> … 全体を<XPDFJ>で囲む
+<do file="stddefs.inc"/> … 標準マクロファイルstddefs.incの読み込み
+<BODY> … 内容の全体を<BODY>で囲む
+…ここに内容を書く…
+</BODY>
+<print file="$Args{outfile}"/> … 出力するPDFファイル名を指定※
+</XPDFJ>]]>
+</P>
+</TD>
+</TR>
+</TABLE>
+<SKIP skip="10"/>
+<UL label="※"><MLI tstyle="fontsize:20">
+XML宣言では正しいエンコーディングを指定すること（XML::Parserで解釈される：x-sjis-cp932、x-euc-jp-jisx0221）
+出力するファイル名を$Args{outfile}とすれば原稿ファイル名に.pdfを付けたものに
+</MLI></UL>
+
+<Header title="参考：XMLの書き方"/>
+<UL><MLI tstyle="fontsize:20">
+<![CDATA[
+先頭にはXML宣言を書いて原稿の文字コードと合致したencodingを指定する。
+大文字小文字は区別される。<BODY>を<Body>と書いたりしてはダメ。特にHTMLに慣れた方は注意。
+<XXX…>が開始タグ</XXX>が終了タグで、入れ子になってもよいが、開始タグと終了タグがきちんと対応すること。<XXX…></XXX>と内容がない場合は<XXX…/>と書ける。HTMLのように<P>だけ書いて</P>を書かないのはダメ、<BR>は<BR/>と書かねばならない。
+開始タグの中に「名前="値"」あるいは「名前='値'」と属性を指定できる。
+タグを書くため以外に < や > を書くときは、&lt; &gt; とする。その他、& は &amp;、' は &apos; " は &quot; と書ける。
+< や > をたくさん含むようなテキストを書くときに一つ一つ &lt; などと書くのが面倒なら、<![CDATA[ と]]> ]]&gt; <![CDATA[で囲むとそのまま書ける。
+<!-- から --> まではコメント。コメント中には -- という文字列は入れらないので、コメントは入れ子にはできない。
+]]>
+</MLI></UL>
+
+<Header title="標準マクロの使い方～stddefs.incの読み込み"/>
+<P>
+&lt;do file="stddefs.inc"/&gt;で読み込むと、次のように設定される。
+</P>
+<TABLE cellwidth="40%,20%,40%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>属性名</TD><TD>省略時値</TD><TD>意味</TD></TR>
+<TR><TD>pagewidth</TD><TD>595</TD><TD>ページ幅</TD></TR>
+<TR><TD>pageheight</TD><TD>842</TD><TD>ページ高さ</TD></TR>
+<TR><TD>leftmargin, rightmargin, topmargin, bottommargin</TD><TD>72</TD><TD>左右上下の余白</TD></TR>
+<TR><TD>fontsize</TD><TD>10</TD><TD>本文フォントサイズ</TD></TR>
+<TR><TD>linefeed</TD><TD>150%</TD><TD>本文行送り</TD></TR>
+</TABLE>
+<P align="left">
+B5の用紙で余白1.5cm、フォントは9ポイントとしたければ、
+&lt;do file="stddefs.inc" pagewidth="516" pageheight="728" margin="42" fontsize="9"/&gt;
+</P>
+<Note>
+※1ポイントは1/72インチ。1インチは2.54cm。
+</Note>
+
+<Header title="標準マクロの使い方～見出しと本文段落"/>
+<P>
+見出しは&lt;H1&gt;～&lt;H4&gt;で囲む（&lt;H1&gt;は中央寄せ）
+</P>
+<P>
+本文段落は&lt;P&gt;で囲む
+</P>
+<SKIP skip="20"/>
+<P>
+&lt;P&gt;&lt;LI&gt;&lt;TD&gt;での改行と空白の扱い（HTMLと異なる）
+</P>
+<UL><MLI>
+タグの前後の改行は無視される
+テキスト中の改行は生きる（&lt;BR/&gt;で改行することもできる）
+行頭のタブや半角空白は無視される（入れ子を字下げして原稿を見やすくするため）
+</MLI></UL>
+<TABLE cellwidth="360" cellpadding="10" cellbox="sf" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{code}" tstyle="$TStyle{small}" preskip="10">
+<TR>
+<TD>
+<P pstyle="$PStyle{code}" tstyle="$TStyle{small}" foreachline="1">
+<![CDATA[
+<H1>表題用の見出し</H1>
+<H2>大見出し</H2>
+<H3>中見出し</H3>
+<H4>小見出し</H4>
+<P>
+　本文用の段落
+　改行は生きる<BR/>BRでの改行も可能
+</P>
+]]>
+</P>
+</TD>
+<TD>
+<H1>表題用の見出し</H1>
+<H2>大見出し</H2>
+<H3>中見出し</H3>
+<H4>小見出し</H4>
+<P>
+本文用の段落
+改行は生きる<BR/>BRでの改行も可能
+</P>
+</TD>
+</TR>
+</TABLE>
+<Note>
+※実際のフォントは見出しはゴシック、本文は明朝です
+</Note>
+
+<Header title="標準マクロの使い方～テキストスタイル"/>
+<P>
+<![CDATA[<B><I><U><SUP><SUB>]]>で太字、斜体、下線、上付き、下付き
+</P>
+<P>
+&lt;S&gt;で次のテキストスタイルを指定できる
+</P>
+<TABLE cellwidth="30%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>スタイル名</TD><TD>値と機能</TD></TR>
+<TR><TD>fontsize</TD><TD>フォントサイズ</TD></TR>
+<TR><TD>italic</TD><TD>1:斜体</TD></TR>
+<TR><TD>bold</TD><TD>1:太字</TD></TR>
+<TR><TD>ruby</TD><TD>ルビ文字列</TD></TR>
+<TR><TD>shapestyle</TD><TD>文字描画の図形スタイル</TD></TR>
+<TR><TD>withdot</TD><TD>1:圏点あり</TD></TR>
+<TR><TD>withline</TD><TD>1:下線あり</TD></TR>
+<TR><TD>withlinestyle</TD><TD>下線の図形スタイル</TD></TR>
+<TR><TD>withbox</TD><TD>囲み枠。s:枠線、f:塗りつぶし、sf:枠線＋塗りつぶし。sの代わりに l:左辺、r:右辺、t:上辺、b:下辺 の組み合わせも可。rX:（Xは数値）角を半径Xで丸く</TD></TR>
+<TR><TD>withboxstyle</TD><TD>囲み枠の図形スタイル</TD></TR>
+</TABLE>
+<P>
+図形スタイル
+</P>
+<TABLE cellwidth="30%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>スタイル名</TD><TD>値と機能</TD></TR>
+<TR><TD>fillcolor</TD><TD>塗りつぶし色</TD></TR>
+<TR><TD>strokecolor</TD><TD>線色</TD></TR>
+<TR><TD>linewidth</TD><TD>線幅</TD></TR>
+<TR><TD>linedash</TD><TD>破線パターン（オン幅,オフ幅,開始オフセット）</TD></TR>
+</TABLE>
+<Note>
+  ※図形スタイルを省略すると枠線色塗りつぶし色とも黒、線幅1、実線
+  ※色は「#RRGGBB」（16進）または0（黒）から1（白）の間の数値
+  ※破線パターンを指定しなければ実線
+  ※破線パターンの開始オフセットは省略可
+</Note>
+
+<TABLE cellwidth="360" cellpadding="10" cellbox="lr" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{code}" tstyle="$TStyle{small}" preskip="10">
+<TR><TD><![CDATA[
+<B>太字</B><I>斜体</I><U>下線</U><SUP>上付き</SUP><SUB>下付き</SUB>
+]]></TD><TD>
+<B>太字</B><I>斜体</I><U>下線</U><SUP>上付き</SUP><SUB>下付き</SUB>
+</TD></TR>
+<TR><TD><![CDATA[
+<S shapestyle="fillcolor:#FF0000">赤文字</S>
+]]></TD><TD>
+<S shapestyle="fillcolor:#FF0000">赤文字</S>
+</TD></TR>
+<TR><TD><![CDATA[
+<S shapestyle="fillcolor:1" withbox="f" withboxstyle="fillcolor:0.5">網掛け白抜き</S>
+]]></TD><TD>
+<S shapestyle="fillcolor:1" withbox="f" withboxstyle="fillcolor:0.5">網掛け白抜き</S>
+</TD></TR>
+<TR><TD><![CDATA[
+<S withline="1" withlinestyle="linedash:3,3">点線下線</S>
+]]></TD><TD>
+<S withline="1" withlinestyle="linedash:3,3">点線下線</S>
+</TD></TR>
+<TR><TD><![CDATA[
+<S ruby="あじさい">紫陽花</S>
+]]></TD><TD>
+<S ruby="あじさい">紫陽花</S>
+</TD></TR>
+</TABLE>
+
+<Header title="標準マクロの使い方～段落スタイル"/>
+<P>
+&lt;P&gt;の属性
+</P>
+<TABLE cellwidth="30%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:0.5; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>属性名</TD><TD>値と機能</TD></TR>
+<TR><TD>pstyle</TD><TD>追加の段落スタイル（文書の本文設定を元に）</TD></TR>
+<TR><TD>tstyle</TD><TD>追加のテキストスタイル（文書の本文設定を元に）</TD></TR>
+<TR><TD>align</TD><TD>b,left:左寄せ、m,center:中央寄せ、e,right:右寄せ、w:両端寄せ</TD></TR>
+</TABLE>
+
+<P>
+主な段落スタイル
+</P>
+<TABLE cellwidth="30%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:0.5; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>スタイル名</TD><TD>値と機能</TD></TR>
+<TR><TD>align</TD><TD>b:左寄せ、m:中央寄せ、e:右寄せ、w:両端寄せ</TD></TR>
+<TR><TD>linefeed</TD><TD>行送り（ポイントまたは%）</TD></TR>
+<TR><TD>preskip</TD><TD>段落前の間隔</TD></TR>
+<TR><TD>postskip</TD><TD>段落後の間隔</TD></TR>
+<TR><TD>beginindent</TD><TD>行頭インデント</TD></TR>
+<TR><TD>endindent</TD><TD>行末インデント</TD></TR>
+</TABLE>
+
+<TABLE cellwidth="360" cellpadding="10" cellbox="lr" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{code}" tstyle="$TStyle{small}" preskip="10">
+<TR><TD><![CDATA[
+<P align="center">中央寄せ</P>
+]]></TD><TD>
+<P align="center">中央寄せ</P>
+</TD></TR>
+<TR><TD><![CDATA[
+<P pstyle="beginindent:40" tstyle="fontsize:15">フォントサイズ15ポイント、行頭を40ポイント下げる</P>
+]]></TD><TD>
+<P pstyle="beginindent:40" tstyle="fontsize:15">フォントサイズ15ポイント、行頭を40ポイント下げる</P>
+</TD></TR>
+<TR><TD><![CDATA[
+<P pstyle="align:e; linefeed:200%;">右寄せで]]><BR/><![CDATA[
+行間を広く</P>
+]]></TD><TD>
+<P pstyle="align:e; linefeed:200%;">右寄せで
+行間を広く</P>
+</TD></TR>
+</TABLE>
+
+<Header title="標準マクロの使い方～箇条書き"/>
+<P>
+<![CDATA[<UL><LI>、<OL><LI>、<DL><DT><DD>]]>で箇条書き
+</P>
+<P>
+各行を&lt;LI&gt;で囲むのが面倒なら&lt;MLI&gt;で
+</P>
+<TABLE cellwidth="10%,20%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:0.5; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD></TD><TD>属性名</TD><TD>値と機能</TD></TR>
+<TR><TD>UL</TD><TD>label</TD><TD>ラベル文字列（省略すると「・」）</TD></TR>
+<TR><TD>OL</TD><TD>label</TD><TD>ラベル初期値（半角英数字、省略すると「1」）「-」を指定すると前回のOLから引き継ぐ</TD></TR>
+<TR><TD></TD><TD>prelabel</TD><TD>ラベルの前置文字列</TD></TR>
+<TR><TD></TD><TD>postlabel</TD><TD>ラベルの後置文字列（省略すると「.」）</TD></TR>
+<TR><TD>DL</TD><TD>labelskip</TD><TD>語句と本体の間隔（省略すると本文フォントサイズに同じ）</TD></TR>
+<TR><TD>共通</TD><TD>labelsize</TD><TD>二行目以降の字下げ（省略すると本文フォントサイズに同じ）</TD></TR>
+</TABLE>
+
+<TABLE cellwidth="360" cellpadding="10" cellbox="lr" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" tablebox="sf" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{small}" tstyle="$TStyle{small}" preskip="10">
+<TR><TD><![CDATA[
+<UL><MLI>
+各行が箇条書きに
+各行が箇条書きに
+</MLI></UL>
+]]></TD><TD>
+<UL><MLI>
+各行が箇条書きに
+各行が箇条書きに
+</MLI></UL>
+</TD></TR>
+<TR><TD><![CDATA[
+<OL>
+　<LI>外側の箇条書き１</LI>
+　<P>外側の箇条書き１の続き</P>
+　<OL label="a">
+　　<LI>内側の箇条書き１</LI>
+　</OL>
+　<LI>外側の箇条書き２</LI>
+</OL>
+]]></TD><TD>
+<OL>
+  <LI>外側の箇条書き１</LI>
+  <P>外側の箇条書き１の続き</P>
+  <OL label="a">
+    <LI>内側の箇条書き１</LI>
+  </OL>
+  <LI>外側の箇条書き２</LI>
+</OL>
+</TD></TR>
+<TR><TD><![CDATA[
+<DL labelsize="40" labelskip="20">
+　<DT>語句説明</DT><DD>語句と説明の間が20で二行目以降が40下げ</DD>
+</DL>
+]]></TD><TD>
+<DL labelsize="40" labelskip="20">
+  <DT>語句説明</DT><DD>語句と説明の間が20で二行目以降が40下げ</DD>
+</DL>
+</TD></TR>
+</TABLE>
+
+<Header title="標準マクロの使い方～表"/>
+<P>
+<![CDATA[<TABLE><TR><TH><TD>]]>で表が作れる
+</P>
+<P>
+内容に応じてセル幅を自動調節する機能はなく、cellwidth属性ですべてのセル幅（列幅）を指定する必要がある
+</P>
+<P>
+&lt;TD&gt;の中は小さなBODYと考えることができて、その中にさらに<![CDATA[<P><UL><OL><DL><TABLE>]]>を入れることができる
+</P>
+<TABLE cellwidth="10%,20%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:0.5; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD></TD><TD>属性名</TD><TD>値と機能</TD></TR>
+<TR><TD>TABLE</TD><TD>cellwidth</TD><TD>セル幅（カンマ区切りで列毎に指定、省略すると200）</TD></TR>
+<TR><TD></TD><TD>tablebox</TD><TD>表枠線。指定方法はwithboxと同じ</TD></TR>
+<TR><TD></TD><TD>tableboxstyle</TD><TD>表枠線の図形スタイル（省略すると「linewidth:0.25」）</TD></TR>
+<TR><TD></TD><TD>preskip</TD><TD>前間隔</TD></TR>
+<TR><TD></TD><TD>postskip</TD><TD>後間隔</TD></TR>
+<TR><TD>共通</TD><TD>cellpadding</TD><TD>セル内余白</TD></TR>
+<TR><TD></TD><TD>cellbox</TD><TD>セル枠線。指定方法はwithboxと同じ※</TD></TR>
+<TR><TD></TD><TD>cellboxstyle</TD><TD>セル枠線の図形スタイル（省略すると「linewidth:0.25」）</TD></TR>
+<TR><TD></TD><TD>align</TD><TD>セル内配置。left,center,right※</TD></TR>
+<TR><TD></TD><TD>pstyle</TD><TD>追加の段落スタイル</TD></TR>
+<TR><TD></TD><TD>tstyle</TD><TD>追加のテキストスタイル</TD></TR>
+<TR><TD>TD</TD><TD><RED>colspan</RED></TD><TD><RED>セルがまたがる列数</RED></TD></TR>
+<TR><TD></TD><TD><RED>rowspan</RED></TD><TD><RED>セルがまたがる行数</RED></TD></TR>
+</TABLE>
+<Note>
+※cellboxとalignをTABLEやTRで指定するときはカンマ区切りで列毎に指定できる。このとき列数の方が多ければ最後の要素が繰り返し使われる
+</Note>
+
+<TABLE cellwidth="100%" cellpadding="10" cellbox="sf" cellboxstyle="linewidth:1; fillcolor:#FFFFFF" tableboxstyle="linewidth:1; fillcolor:#FFFFFF" pstyle="$PStyle{small}" tstyle="$TStyle{small}" preskip="10">
+<TR><TD>
+<P pstyle="$PStyle{code}" foreachline="1">
+<![CDATA[
+<TABLE cellwidth="40%, 30%" cellpadding="5" cellbox=",l" align="center, right" tablebox="sr10" tableboxstyle="linewidth:1">
+<TR cellbox="b,lb"><TH>年月</TH><TH>A</TH><TH>B</TH></TR>
+<TR><TD>2004年1月</TD><TD>15,000</TD><TD>25,000</TD></TR>
+<TR><TD>2004年2月</TD><TD>12,000</TD><TD>21,000</TD></TR>
+</TABLE>
+]]>
+</P>
+</TD></TR><TR><TD>
+  <TABLE cellwidth="40%, 30%" cellpadding="5" cellbox=",l" align="center, right"
+    tablebox="sr10" tableboxstyle="linewidth:1">
+    <TR cellbox="b,lb">
+      <TH>年月</TH><TH>A</TH><TH>B</TH>
+    </TR>
+    <TR>
+      <TD>2004年1月</TD><TD>15,000</TD><TD>25,000</TD>
+    </TR>
+    <TR>
+      <TD>2004年2月</TD><TD>12,000</TD><TD>21,000</TD>
+    </TR>
+  </TABLE>
+</TD></TR>
+</TABLE>
+
+<Header title="標準マクロの使い方～その他"/>
+<P>
+その他に次のようなマクロが用意されている
+</P>
+<TABLE cellwidth="30%,70%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:0.5; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>マクロ名</TD><TD>機能</TD></TR>
+<TR><TD>HEADER, FOOTER</TD><TD>ページヘッダ、フッタを指定する</TD></TR>
+<TR><TD>HR</TD><TD>横罫線を引く</TD></TR>
+<TR><TD>IMG</TD><TD>画像を挿入する</TD></TR>
+<TR><TD>DIV</TD><TD>ブロックを作って囲み枠を付けたり配置を調整したりする</TD></TR>
+<TR><TD>SKIP</TD><TD>間隔を調整する</TD></TR>
+<TR><TD>NEWPAGE</TD><TD>改ページする</TD></TR>
+</TABLE>
+<P>
+線画図形を描くマクロを定義したshape.incというマクロファイルも用意されている
+</P>
+
+<Header title="簡単なマクロ定義"/>
+<P>
+よく使う属性がある場合…aliasを使う
+</P>
+<Note>
+<![CDATA[<S shapestyle="fillcolor:#FF0000">]]>をよく使うなら、
+<![CDATA[<alias tag="RED" aliasof="S" shapestyle="fillcolor:#FF0000"/>]]>と定義すれば、
+<![CDATA[<RED>赤文字</RED>]]>と書ける
+</Note>
+<P>
+一連のタグのまとまりをマクロ化する…defを使う
+</P>
+<Note>
+<![CDATA[<P align="right"><BR/>ネットストック<BR/>中島 靖</P>]]>をよく使うなら、
+<![CDATA[<def tag="MYSIGN"><return><P align="right"><BR/>ネットストック<BR/>中島 靖</P></return></def>]]>と定義すれば、
+<![CDATA[<MYSIGN/>]]>と書くだけでよい
+</Note>
+<P>
+マクロ定義を別ファイルにして読み込むこともできる
+</P>
+<Note>
+上記のようなマクロ定義を、<![CDATA[<?xml version="1.0" encoding="…"?><do>と</do>]]>で挟んだ内容のファイルmymacro.incを作る
+<![CDATA[<do file="stddefs.inc"/>の後に<do file="mymacro.inc"/>と書けばOK]]>
+</Note>
+
+<Header title="論文用マクロarticle.inc"/>
+<P>
+二段組みの論文用のマクロ
+</P>
+<P>
+stddefs.incも自動的に読み込まれるので、標準マクロも使える
+</P>
+<TABLE cellwidth="25%,75%" cellpadding="7" cellbox="lr" cellboxstyle="linewidth:1" tablebox="sf" tableboxstyle="linewidth:0.5; fillcolor:#FFFFFF" preskip="15" postskip="15" pstyle="linefeed:120%; align:b" tstyle="fontsize:20">
+<TR cellbox="lrb"><TD>マクロ名</TD><TD>機能</TD></TR>
+<TR cellbox="lrb"><TD>ARTICLE</TD><TD>論文全体を囲む</TD></TR>
+<TR><TD>HEAD</TD><TD>ヘッダ部を囲む（ARTICLEの中）</TD></TR>
+<TR><TD>TITLE</TD><TD>表題</TD></TR>
+<TR><TD>ETITLE</TD><TD>英文表題</TD></TR>
+<TR><TD>AUTHOR</TD><TD>著者名</TD></TR>
+<TR><TD>EAUTHOR</TD><TD>英文著者名</TD></TR>
+<TR><TD>SUMMARY</TD><TD>要約</TD></TR>
+<TR cellbox="lrb"><TD> ESUMMARY</TD><TD>英文要約</TD></TR>
+<TR><TD>BODY</TD><TD>本文部を囲む（ARTICLEの中）</TD></TR>
+<TR><TD>SECTITLE</TD><TD>章見出し。「1.」の連番が自動的に付く。label属性で指定も可</TD></TR>
+<TR><TD>SUBSECTITLE</TD><TD>節見出し。「1.1」の連番が自動的に付く。label属性で指定も可</TD></TR>
+<TR><TD>FOOTNOTE</TD><TD>脚注。label属性でラベルを指定</TD></TR>
+<TR><TD>FIG</TD><TD>図表を囲む。ページ上部に中央寄せで配置。float="e"でページ下部に配置</TD></TR>
+<TR><TD>CAPTION</TD><TD>図表キャプション（FIGの中）</TD></TR>
+<TR><TD>ECAPTION</TD><TD>英文図表キャプション（FIGの中）</TD></TR>
+<TR><TD>REFERENCE</TD><TD>参照文献。label属性でラベルを指定</TD></TR>
+</TABLE>
+<Note>
+※今のところ脚注や参照文献のラベルは自動連番されない
+</Note>
+
+<Header title="論文用マクロの使い方"/>
+<P>
+論文全体を&lt;ARTICLE&gt;で囲み、ヘッダ部を&lt;HEAD&gt;で、本文部を&lt;BODY&gt;で囲む
+</P>
+<P>
+ヘッダ部には<![CDATA[<TITLE> <ETITLE> <AUTHOR> <EAUTHOR> <SUMMARY> <ESUMMARY>]]>から必要なものを並べる
+</P>
+<P>
+本文部には標準マクロの他、<![CDATA[<SECTITLE> <SUBSECTITLE> <FOOTNOTE> <FIG> <REFERENCE>]]>から必要なものを並べる
+</P>
+<SKIP skip="20"/>
+<P>
+実例としてarticledemo.xpが付属しています（→別紙資料）
+</P>
+
+<Header title="おわりに"/>
+<P>
+課題
+</P>
+<UL>
+<LI>
+段をまたがった図表がレイアウトできない
+<S fontsize="20">→近い将来に改善したい</S>
+</LI>
+<LI>
+線画図形を位置や大きさを指定して配置することはできるが、GUIで作成できない
+<S fontsize="20">→将来はSVGに対応したい</S>
+</LI>
+<LI>
+数式のレイアウト機能がない
+<S fontsize="20">→将来はMathMLに対応したい</S>
+</LI>
+</UL>
+<SKIP skip="20"/>
+<P>
+発展途上のソフトウェアです。是非ご意見をお寄せください
+</P>
+<P>
+PDFJは次の場所にあります（XPDFJはPDFJに付属しています）
+</P>
+<Note>
+http://hp1.jonex.ne.jp/~nakajima.yasushi/
+</Note>
+<P>
+メーリングリストがあります
+</P>
+<Note>
+mailto:nakajima.yasushi-pdfj-subscribe@jonex.ne.jp
+</Note>
+
+
+  </objects>
+  <call>
+    <break sizes="$Doc{Bodyheight}">
+      <call>
+        <new_page caller="$Doc" setvar="$page" trans="1,Wipe,90"/>
+        <eval>$pagenum = $page->pagenum; print "page$pagenum\n"</eval>
+        <Shape>
+          <call>
+            <do if="$Args{forprint} ? $page->pagenum == 1 : $page->pagenum >= 1">
+              <show page="$page" caller="$Image{bgimg}" x="0" y="0" align="bl"/>
+            </do>
+            <do if="$page->pagenum > 1">
+              <box x="0" y="0" w="782" h="535" spec="fr10" style="linewidth:2; strokecolor:#000077; fillcolor:#f0f8ff"/>
+            </do>
+            <show page="$page" x="30" y="30" align="bl"/>
+          </call>
+        </Shape>
+        <show page="$page" x="$Doc{Bodyleft}" y="$Doc{Bodytop}" align="tl"/>
+        <Nombre page="$page"/>
+      </call>
+    </break>
+  </call>
+</Block>
+
+<do if="$Args{forprint}">
+  <eval>
+    $Args{outfile} =~ s/\.pdf$/.p.pdf/i;
+  </eval>
+</do>
+<print file="$Args{outfile}"/>
+
+</XPDFJ>

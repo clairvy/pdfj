@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<XPDFJ version="0.1">
+<do file="kof2002.inc"/>
+
+<def tag="Header">
+  <return>
+  <P tstyle="$TStyle{pagetitle}" pstyle="$PStyle{pagetitle}">
+    <Outline title="$Args{title}"/>
+    <T>$Args{title}</T>
+  </P>
+  <HR width="720" size="2" color="#770000"/>
+  <BlockSkip skip="10"/>
+  </return>
+</def>
+
+<new_image setvar="$Image{bgimg}" src="dscf0233.jpg" pxwidth="1280" pxheight="1024" width="842" height="595"/>
+
+<Block direction="V">
+  <style><BStyle/></style>
+  <objects>
+
+<P tstyle="$TStyle{whitebigtitle}" pstyle="$PStyle{bigtitle}">
+Perlだけで作る日本語PDF
+</P>
+<P tstyle="$TStyle{whitebigtitle}" pstyle="$PStyle{bigtitle}">
+日本語組版ルールを組み込んだPDF生成モジュール PDFJ
+</P>
+<P tstyle="$TStyle{whitesmalltitle}" pstyle="$PStyle{smalltitle}">
+中島 靖（Kansai.pm、(株)ネットストック）
+&lt;nakajima@netstock.co.jp&gt;
+</P>
+<P tstyle="$TStyle{whitesmalltitle}" pstyle="$PStyle{smalltitle}">
+2002年12月6日
+関西オープンソース＋フリーウェア2002<BR/>
+<S color="#ff0000">2003年10月7日、2004年8月20日、2005年2月17日加筆修正</S>
+</P>
+
+<NewBlock/>
+<Header title="PDFJとは"/>
+<P>
+日本語PDFを作成するためのPerlのライブラリモジュール
+</P>
+<OL postlabel=")">
+<LI>日本語の組版ルール（禁則、行の詰め伸ばし、ルビ、添え字、縦書き中の欧文、縦中横、下線・傍線、圏点など）</LI>
+<LI>フォントは標準Type1とTrueType（TrueTypeは埋め込み）</LI>
+<LI>テキスト中の画像や線画図形、線画図形中のテキストや画像</LI>
+<LI>箇条書きのためのラベル付き段落</LI>
+<LI>段落、画像、図形などを並べたブロック。入れ子のブロックによる表</LI>
+<LI>ページをまたぐ段落やブロックの分割配置</LI>
+<LI>PDFのアウトラインやハイパーリンク</LI>
+<LI><S color="#ff0000">XMLで原稿が書けます</S></LI>
+</OL>
+<P>
+2002年5月に初公開の、発展途上のソフトウェアです
+</P>
+<debuginfo pattern="Args"/>
+
+<NewBlock/>
+<Header title="背景と目的～1"/>
+<P>
+Webアプリケーションに印刷機能を持たせるためにサーバーで動的に日本語PDFを生成したい
+</P>
+<TABLE cellwidth="22%, 78%" cellpadding="5" cellbox="sf" cellboxstyle="fillcolor:1">
+<TR>
+<TD>TeX+dvipdfm</TD>
+<TD><UL><LI>サーバー側の仕掛としてはちょっと大げさ</LI>
+<LI>複雑な数式を扱うならこれしかないが、ビジネスアプリには不要だろう</LI></UL></TD>
+</TR>
+<TR>
+<TD>PDFLib</TD>
+<TD><UL><LI>レイアウト機能が弱く、かなりのプログラミングが必要</LI>
+<LI>日本語対応の細かなところまでは無理</LI>
+<LI>商用の場合ライセンスが必要</LI></UL></TD>
+</TR>
+<TR>
+<TD>FOP</TD>
+<TD><UL><LI>うーん、JAVAかぁ…(^^;;;)</LI>
+<LI>XSLは魅力だけどXSLTを書くのは…(^^;;;)</LI></UL></TD>
+</TR>
+</TABLE>
+<P>
+→Perlだけでちょいちょいっとやりたいなぁ
+</P>
+
+<NewBlock/>
+<Header title="背景と目的～2"/>
+<P>
+本を書くのにLaTeXのマクロの代わりにPerlスクリプトでレイアウトできたらラクだなぁ
+</P>
+<P pstyle="$PStyle{note}" tstyle="$TStyle{note}">
+LaTeXで複雑なマクロを書いたら不安定で困った…（すみません、TeXnicianじゃないもので）
+</P>
+<P>
+自作モジュールなら日本語組版ルールもきちんと組み込めるだろう
+</P>
+<P pstyle="$PStyle{note}" tstyle="$TStyle{note}">
+TeXでは難しい、ルビの配置とか、追い込みの時の空白の詰め方とか…（すみません、TeXnicianじゃないもので）
+</P>
+<NewBlock/>
+<Header title="前提として"/>
+<OL postlabel=")">
+<LI>Perlだけで書く（Cのコンパイルができないサーバーでも使えるように）</LI>
+<LI>日本語組版ルール（JIS X 4051）を組み込む（ただし厳密な準拠にはこだわらない）</LI>
+<LI>縦書きもOK</LI>
+<LI>段落、表、箇条書き、図といったレイアウト要素のページへの適切な配置</LI>
+<LI>アウトラインやハイパーリンクなどのPDFの便利な機能はできるだけ利用できるようにする</LI>
+<LI>できる限りフリーにする</LI>
+</OL>
+
+<NewBlock/>
+<Header title="日本語組版ルール～1"/>
+<P>
+JIS X 4051「日本語文書の行組版方法」(1995)を採用
+</P>
+<P>
+JIS X 4051のうち概ね次のものをサポート
+</P>
+<TABLE cellwidth="50%, 50%" cellpadding="5">
+<TR>
+<TD><UL>
+<LI>約物の基本的な用法</LI>
+<LI>行頭禁則処理</LI>
+<LI>行末禁則処理</LI>
+<LI>分離禁止処理</LI>
+<LI>和欧文の混植処理</LI>
+<LI>縦中横処理</LI>
+<LI>ルビ処理</LI>
+</UL></TD>
+<TD><UL>
+<LI>添え字処理</LI>
+<LI>圏点処理</LI>
+<LI>下線・傍線処理</LI>
+<LI>段落整形処理</LI>
+<LI>そろえ（中央、行頭、行末、均等割）</LI>
+<LI>行の調整処理</LI>
+<LI>表処理</LI>
+</UL></TD>
+</TR>
+</TABLE>
+
+<NewBlock/>
+<Header title="日本語組版ルール～2"/>
+<P>
+JIS X 4051と異なる点
+</P>
+<UL>
+<LI>文字間の間隔はすべて後ろの文字のサイズに従う</LI>
+<LI>欧文スペースは三分空きでなくフォントに従う</LI>
+</UL>
+<P>
+　
+不完全または未サポートの処理
+</P>
+<UL>
+<LI>連数字の配置法</LI>
+<LI>割注</LI>
+<LI>段落末尾処理（段落の最終行を所定の文字数以上に）</LI>
+<LI>タブ処理</LI>
+<LI>表処理における行間隔の均等割</LI>
+</UL>
+
+<NewBlock/>
+<Header title="組版機能デモ"/>
+<TABLE cellwidth="360, 360" align="w,b" cellpadding="5" cellbox="sf" cellboxstyle="fillcolor:1">
+<TR>
+<TD pstyle="$PStyle{highline}">
+□□□□□□□□□□□□
+　「約物の、（幅と間隔）」
+<S font="$FontH{gothic_helvetica}">ゴシックGothic</S><S font="$FontH{mincho_times}">明朝Minchou</S><S font="$FontH{gothic}">ゴシックHankaku</S><S font="$FontH{mincho}">明朝Hankaku</S><S shapestyle="fillcolor:#ff0000">色文字</S> <S withline="1">下線</S> <S withline="1" withlinestyle="linedash:2,2">下破線</S> <S withdot="1">圏点</S> <S withbox="f" withboxstyle="fillcolor:0.5" shapestyle="fillcolor:1">網掛け</S> <S italic="1">日本語斜体</S> 添え字<S suffix="u">1）</S><S ruby="なかじま">中島</S><S ruby="もじいち">文字位置</S><S ruby="あけぼの">曙</S><S ruby="ボス">大親分</S><S ruby="boss">大親分</S><S ruby="フィフティーン">fifteen</S>
+</TD>
+<TD>
+<P size="350" pstyle="$PStyle{highline}" tstyle="$TStyle{tate}">
+□□□□□□□□□□□□
+　「約物の、（幅と間隔）」
+<S font="$FontV{gothic_helvetica}">ゴシックGothic</S><S font="$FontV{mincho_times}">明朝Minchou</S><S font="$FontV{gothic}">ゴシックHankaku</S><S font="$FontV{mincho}">明朝Hankaku</S><S shapestyle="fillcolor:#ff0000">色文字</S> <S withline="1">傍線</S> <S withline="1" withlinestyle="linedash:2,2">傍破線</S> <S withdot="1">圏点</S> <S withbox="f" withboxstyle="fillcolor:0.5" shapestyle="fillcolor:1">網掛け</S> <S italic="1">日本語斜体</S> <S vh="1">(1)</S>縦中横 添え<S withnote="（１）" withnotestyle="$TStyle{twithnote}">字</S><S ruby="なかじま">中島</S><S ruby="もじいち">文字位置</S><S ruby="あけぼの">曙</S><S ruby="ボス">大親分</S><S ruby="boss">大親分</S><S ruby="フィフティーン">fifteen</S>
+</P>
+</TD>
+</TR>
+</TABLE>
+  
+<NewBlock/>
+<Header title="帳票デモ"/>
+<TABLE cellwidth="720" cellpadding="5" cellbox="sf" cellboxstyle="fillcolor:1">
+<TR><TD>
+<P align="center">納品書</P>
+<P align="right" pstyle="$PStyle{small}" tstyle="$TStyle{small}">2002年9月1日</P>
+<P align="left"><T><S withline="1">PDFJ社 御中</S></T></P>
+<P align="right" pstyle="$PStyle{small}" tstyle="$TStyle{small}">
+（株）ネットストック
+東京都大田区蒲田XX-YYY
+03-XXXX-YYYY
+</P>
+<TABLE cellwidth="250, 100, 350" cellpadding="5" tablebox="s" tableboxstyle="linewidth:3" cellbox="s">
+<TR><TH>名称</TH><TH>数量</TH><TH>摘要</TH></TR>
+<TR>
+<TD>ノートパソコン</TD>
+<TD align="right">20</TD>
+<TD>Windows XP Professional、Office XP Personal</TD>
+</TR>
+<TR>
+<TD>スイッチングハブ</TD>
+<TD align="right">3</TD>
+<TD>　</TD>
+</TR>
+</TABLE>
+</TD></TR>
+</TABLE>
+
+<NewBlock/>
+<Header title="XPDFJとは"/>
+<P>
+XMLでマークアップされたテキストからPDFJを用いてPDFを生成するPerlモジュール
+</P>
+<UL>
+<LI>PDFJを直接使うと自由度は高いがいちいちプログラミングが必要</LI>
+<LI>とりあえずこのスライドが作れる程度まで来たが、まだ仕様が動いている段階。近日公開<S color="#ff0000">→かなり実用的になってきました</S></LI>
+<LI>XMLライク？→自動化のためはXMLだが、今のところ書きやすさを優先<S color="#ff0000">→結局XML準拠にしました</S></LI>
+<LI>最終的には本を丸ごと一冊書けるように…<S color="#ff0000">→目次と索引付きの小冊子程度は書けます。論文用マクロも</S></LI>
+</UL>
+<P>
+　
+さきほどの帳票デモを生成するXPDFJのソーステキストは次のようになる<S color="#ff0000">→現時点のソースにしてあります</S>
+</P>
+
+<NewBlock/>
+<Header title="帳票デモソース"/>
+<P align="left" pstyle="$PStyle{small}" tstyle="$TStyle{small}">
+<![CDATA[
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<XPDFJ version="0.1"><do file="of2002.inc"/><BODY>
+<P align="center">納品書</P>
+<P align="right" pstyle="$PStyle{small}" tstyle="$TStyle{small}">2002年9月1日</P>
+<P align="left"><T><S withline="1">PDFJ社 御中</S></T></P>
+<P align="right" pstyle="$PStyle{small}" tstyle="$TStyle{small}">（株）ネットストック<BR/>東京都大田区蒲田XX-YYY<BR/>03-XXXX-YYYY</P>
+<TABLE cellwidth="250, 100, 350" cellpadding="5" tablebox="s" tableboxstyle="linewidth:3" cellbox="s">
+<TR><TH>名称</TH><TH>数量</TH><TH>摘要</TH></TR>
+<TR><TD>ノートパソコン</TD><TD align="right">20</TD><TD>Windows XP Professional、Office XP Personal</TD></TR>
+<TR><TD>スイッチングハブ</TD><TD align="right">3</TD><TD>　</TD></TR>
+</TABLE>
+</BODY></XPDFJ>
+]]>
+</P>
+
+<NewBlock/>
+<Header title="今後の展開"/>
+<P>
+当面は、XPDFJを含むバージョン0.7の公開<S color="#ff0000">→しました</S>
+</P>
+<P>
+今後の大きな展開としては
+</P>
+<OL postlabel=")">
+<LI>XPDFJを充実させて本を一冊書いてみる</LI>
+<LI>PDFのフォーム、スライドショー、注釈、暗号化<S color="#ff0000">、電子署名</S>などへの対応<S color="#ff0000">→暗号化とスライドショーは一応できます</S></LI>
+<LI>既存のPDFの編集機能</LI>
+<LI><S color="#ff0000">MathMLによる数式記述</S></LI>
+<LI><S color="#ff0000">SVGによる線画図形記述</S></LI>
+</OL>
+<P>
+PDFJは次の場所にあります
+</P>
+<P pstyle="$PStyle{note}" tstyle="$TStyle{note}">
+http://hp1.jonex.ne.jp/~nakajima.yasushi/
+</P>
+<P>
+メーリングリストがあります
+</P>
+<P pstyle="$PStyle{note}" tstyle="$TStyle{note}">
+mailto:nakajima.yasushi-pdfj-subscribe@jonex.ne.jp
+</P>
+
+  </objects>
+  <call>
+    <break sizes="$Doc{Bodyheight}">
+      <call>
+        <new_page caller="$Doc" setvar="$page" trans="1,Wipe,90"/>
+        <eval>print "page",$page->pagenum,"\n"</eval>
+        <Shape>
+          <call>
+            <do if="$page->pagenum == 1">
+              <show page="$page" caller="$Image{bgimg}" x="0" y="0" align="bl"/>
+            </do>
+            <do if="$page->pagenum > 1">
+              <box x="0" y="0" w="782" h="535" spec="fr10" style="linewidth:2; strokecolor:#000077; fillcolor:#f0f8ff"/>
+            </do>
+            <show page="$page" x="30" y="30" align="bl"/>
+          </call>
+        </Shape>
+        <show page="$page" x="$Doc{Bodyleft}" y="$Doc{Bodytop}" align="tl"/>
+      </call>
+    </break>
+  </call>
+</Block>
+
+<print file="$Args{outfile}"/>
+
+</XPDFJ>

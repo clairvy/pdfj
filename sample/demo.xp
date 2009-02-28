@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="x-sjis-cp932"?>
+<XPDFJ version="0.1">
+<Doc version="1.3" pagewidth="792" pageheight="612"/>
+<add_info Title="PDFJ demo" Author="nakajima@netstock.co.jp"/>
+
+<new_font setvar="$f_m" basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-H"/>
+<new_font setvar="$f_mt" basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-H" abasefont="Times-Roman" aencoding="WinAnsiEncoding" asize="1.05"/>
+<new_font setvar="$f_g" basefont="GothicBBB-Medium" encoding="UniJIS-UCS2-HW-H"/>
+<new_font setvar="$f_gh" basefont="GothicBBB-Medium" encoding="UniJIS-UCS2-HW-H" abasefont="Helvetica" aencoding="WinAnsiEncoding" asize="1.05"/>
+<new_font setvar="$f_mv" basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-V"/>
+<new_font setvar="$f_mtv" basefont="Ryumin-Light" encoding="UniJIS-UCS2-HW-V" abasefont="Times-Roman" aencoding="WinAnsiEncoding" asize="1.05"/>
+<new_font setvar="$f_gv" basefont="GothicBBB-Medium" encoding="UniJIS-UCS2-HW-V"/>
+<new_font setvar="$f_ghv" basefont="GothicBBB-Medium" encoding="UniJIS-UCS2-HW-V" abasefont="Helvetica" aencoding="WinAnsiEncoding" asize="1.05"/>
+
+<Color setvar="$c_darkblue" value="#191970"/>
+<Color setvar="$c_cadetblue" value="#5f9ea0"/>
+<Color setvar="$c_lightcyan" value="#e0ffff"/>
+<Color setvar="$c_white" value="1"/>
+<Color setvar="$c_gray" value="0.5"/>
+<Color setvar="$c_red" value="#ff0000"/>
+
+<SStyle setvar="$ss_red" fillcolor="$c_red"/>
+<SStyle setvar="$ss_darkblue" fillcolor="$c_darkblue"/>
+<SStyle setvar="$ss_white" fillcolor="$c_white"/>
+<SStyle setvar="$ss_gray" fillcolor="$c_gray"/>
+<SStyle setvar="$ss_dash"><linedash>2</linedash><linedash>2</linedash></SStyle>
+
+<TStyle setvar="$s_bigtitle" font="$f_gh" fontsize="40" shapestyle="$ss_darkblue"/>
+<TStyle setvar="$s_smalltitle" font="$f_gh" fontsize="30" shapestyle="$ss_darkblue"/>
+<TStyle setvar="$s_normal" font="$f_gh" fontsize="25"/>
+<TStyle setvar="$s_normalv" font="$f_ghv" fontsize="25"/>
+<TStyle setvar="$s_small" font="$f_gh" fontsize="20"/>
+
+<eval>$width = 712</eval>
+<eval>$padding = 20</eval>
+
+<BStyle setvar="$bs_topframe" padding="$padding" align="mc" withbox="sfr10" height="572"><withboxstyle><SStyle linewidth="5" strokecolor="$c_cadetblue" fillcolor="$c_lightcyan"/></withboxstyle></BStyle>
+<BStyle setvar="$bs_frame" padding="$padding" align="tl" withbox="sfr10" height="572"><withboxstyle><SStyle linewidth="5" strokecolor="$c_cadetblue" fillcolor="$c_lightcyan"/></withboxstyle></BStyle>
+<BStyle setvar="$bs_table"/>
+<BStyle setvar="$bs_tr" adjust="1"/>
+<BStyle setvar="$bs_td" padding="10" align="tl" withbox="sf" withboxstyle="$ss_white"/>
+
+<PStyle setvar="$ps_c40" size="$width" align="m" linefeed="40" preskip="10" postskip="10"/>
+<PStyle setvar="$ps_c30" size="$width" align="m" linefeed="30" preskip="7.5" postskip="7.5"/>
+<PStyle setvar="$ps_40" size="$width" align="w" linefeed="40" preskip="10" postskip="10"/>
+<PStyle setvar="$ps_35" size="$width" align="w" linefeed="35" preskip="7.5" postskip="7.5">
+  <call>
+    <clone setvar="$ps_35dl" labelsize="30">
+      <labeltext><Text texts="＊" style="$s_smalltitle"/></labeltext>
+    </clone>
+  </call>
+</PStyle>
+<PStyle setvar="$ps_30" size="$width" align="w" linefeed="30" preskip="7.5" postskip="7.5">
+  <call>
+    <clone setvar="$ps_30dl" labelsize="25">
+      <labeltext>
+        <sub>
+          <Text style="$s_normal">
+            <texts>$counter</texts><texts>.</texts>
+          </Text>
+          <eval>$counter++</eval>
+        </sub>
+      </labeltext>
+    </clone>
+    <clone setvar="$ps_30i" beginindent="40"/>
+    <clone setvar="$ps_30c1" size="150"/>
+    <clone setvar="$ps_30c2" size="500">
+      <call>
+        <clone setvar="$ps_30c2dl" labelsize="25">
+          <labeltext><Text texts="＊" style="$s_normal"/></labeltext>
+        </clone>
+      </call>
+    </clone>
+  </call>
+</PStyle>
+<PStyle setvar="$ps_50c" size="300" align="w" linefeed="50" preskip="12.5" postskip="12.5"/>
+<PStyle setvar="$ps_50v" size="400" align="w" linefeed="50" preskip="12.5" postskip="12.5"/>
+
+<Shape setvar="$sp_hr">
+  <style><SStyle postskip="5"/></style>
+  <call>
+    <line x="0" y="0" w="$width" h="0">
+      <style><SStyle strokecolor="$c_cadetblue" linewidth="2"/></style>
+    </line>
+  </call>
+</Shape>
+
+<new_page setvar="$page"/>
+
+<Block direction="V" style="$bs_topframe">
+  <objects>
+    <Paragraph style="$ps_c40">
+      <text><Text texts="Perlだけで作る日本語PDF" style="$s_bigtitle"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_c40">
+      <text><Text texts="日本語組版ルールを組み込んだPDF生成モジュール PDFJ" style="$s_bigtitle"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_c30">
+      <text><Text texts="中島 靖 &lt;nakajima@netstock.co.jp&gt;" style="$s_smalltitle"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_c30">
+      <text><Text texts="2002/5/11 Kansan.pm２周年イベント" style="$s_smalltitle"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_c30">
+      <text><Text texts="2002/10/18,2003/10/7,2005/2/17,3/13 改訂" style="$s_smalltitle"/></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="背景と目的～1"/>背景と目的～1</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle" texts="Webアプリケーションに印刷機能を持たせるためにサーバーで動的に日本語PDFを生成したい"/></text>
+    </Paragraph>
+    <Block direction="V" style="$bs_table">
+      <objects>
+        <Block direction="H" style="$bs_tr">
+          <objects>
+            <Block direction="V" style="$bs_td">
+              <objects>
+                <Paragraph style="$ps_30c1">
+                  <text><Text style="$s_normal" texts="TeX+dvipdfm"/></text>
+                </Paragraph>
+              </objects>
+            </Block>
+            <Block direction="V" style="$bs_td">
+              <objects>
+                <Paragraph style="$ps_30c2dl">
+                  <text><Text style="$s_normal" texts="サーバー側にたくさんのソフトをインストールしないといけない"/></text>
+                </Paragraph>
+                <Paragraph style="$ps_30c2dl">
+                  <text><Text style="$s_normal" texts="複雑な数式を扱うならこれしかないが、ビジネスアプリには不要だろう"/></text>
+                </Paragraph>
+              </objects>
+            </Block>
+          </objects>
+        </Block>
+        <Block direction="H" style="$bs_tr">
+          <objects>
+            <Block direction="V" style="$bs_td">
+              <objects>
+                <Paragraph style="$ps_30c1">
+                  <text><Text style="$s_normal" texts="PDFLib"/></text>
+                </Paragraph>
+              </objects>
+            </Block>
+            <Block direction="V" style="$bs_td">
+              <objects>
+                <Paragraph style="$ps_30c2dl">
+                  <text><Text style="$s_normal" texts="日本語対応の細かなところまでは無理"/></text>
+                </Paragraph>
+                <Paragraph style="$ps_30c2dl">
+                  <text><Text style="$s_normal" texts="商用の場合ライセンスが必要"/></text>
+                </Paragraph>
+              </objects>
+            </Block>
+          </objects>
+        </Block>
+        <Block direction="H" style="$bs_tr">
+          <objects>
+            <Block direction="V" style="$bs_td">
+              <objects>
+                <Paragraph style="$ps_30c1">
+                  <text><Text style="$s_normal" texts="FOP"/></text>
+                </Paragraph>
+              </objects>
+            </Block>
+            <Block direction="V" style="$bs_td">
+              <objects>
+                <Paragraph style="$ps_30c2dl">
+                  <text><Text style="$s_normal" texts="うーん、JAVAかぁ…(^^;;;)"/></text>
+                </Paragraph>
+                <Paragraph style="$ps_30c2dl">
+                  <text><Text style="$s_normal" texts="XSLは魅力だけどXSLTを書くのは…(^^;;;)"/></text>
+                </Paragraph>
+              </objects>
+            </Block>
+          </objects>
+        </Block>
+      </objects>
+    </Block>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle" texts="→Perlだけでちょいちょいっとやりたいなぁ"/></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="背景と目的～2"/>背景と目的～2</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>本を書くのにLaTeXのマクロの代わりにPerlスクリプトでレイアウトできたらラクだなぁ</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30i">
+      <text><Text style="$s_normal">
+        <texts>LaTeXで複雑なマクロを書いたら不安定で困った…<Text style="$s_small" texts="（すみません、TeXnicianじゃないもので）"/></texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>自作モジュールなら日本語組版ルールもきちんと組み込めるだろう</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30i">
+      <text><Text style="$s_normal">
+        <texts>TeXでは難しい、ルビの配置とか、追い込みの時の空白の詰め方とか…<Text style="$s_small" texts="（すみません、TeXnicianじゃないもので）"/></texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="目標"/>目標</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35dl">
+      <text><Text style="$s_smalltitle">
+        <texts>Perlだけで書く（Cのコンパイルができないサーバーでも使えるように）</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35dl">
+      <text><Text style="$s_smalltitle">
+        <texts>日本語組版ルール（JIS X 4051）を組み込む</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35dl">
+      <text><Text style="$s_smalltitle">
+        <texts>縦書きもOK</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35dl">
+      <text><Text style="$s_smalltitle">
+        <texts>段落、表、箇条書き、図といったレイアウト要素のページへの適切な配置</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35dl">
+      <text><Text style="$s_smalltitle">
+        <texts>アウトラインやハイパーリンクといったPDF機能も利用できるようにする</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35dl">
+      <text><Text style="$s_smalltitle">
+        <texts>できる限りフリーにする</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<eval>$counter = 1</eval>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="日本語組版ルール～1"/>日本語組版ルール～1</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>JIS X 4051「日本語文書の行組版方法」(1995)を採用</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>JIS X 4051のうち次のものをサポート</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>約物の幅と間隔</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>禁則処理と分離禁止処理</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>縦中横</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>ルビ</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>添え字</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>圏点</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>下線・傍線</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>行長揃えのための間隔調整方法</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>欧文のハイフネーション</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<eval>$counter = 1</eval>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="日本語組版ルール～2"/>日本語組版ルール～2</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>JIS X 4051と異なる点</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>文字間の間隔はすべて後ろの文字のサイズに従う</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>欧文スペースは三分空きでなくフォントに従う</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>割注は未サポート</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>タブ処理は未サポート</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="入力はどうする？"/>入力はどうする？</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle" texts="Perlスクリプトで直接書くのは自由度は高いが面倒。なんらかのマークアップ言語を入力としてPDFを生成したい"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_30">
+      <text><Text style="$s_normal" texts="独自言語、XSL、LaTeX、HTML+CSSなど、いろいろ考えられるが…"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle" texts="XMLベースに落ち着きました→XPDFJ"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_30">
+      <text><Text style="$s_normal" texts="PDFJを直接呼ぶ薄いラッパー＋マクロ機能"/></text>
+    </Paragraph>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle" texts="text2pdfやpod2pdfもあります。手軽で結構便利"/></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<eval>$counter = 1</eval>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text><Text style="$s_bigtitle">
+        <texts><Outline title="現状と計画"/>現状と計画</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>一応実用になるレベルまでできてきました</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>主な課題</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>XPDFJを充実させて本を一冊書いてみる</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>PDFのフォーム、注釈、電子署名などの機能への対応</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>既存のPDFの編集機能</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_30dl">
+      <text><Text style="$s_normal">
+        <texts>チュートリアル的な説明書</texts>
+      </Text></text>
+    </Paragraph>
+    <Paragraph style="$ps_35">
+      <text><Text style="$s_smalltitle">
+        <texts>まだまだバグがあると思います</texts>
+      </Text></text>
+    </Paragraph>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text>
+        <Text style="$s_bigtitle">
+          <texts><Outline title="デモ"/>デモ</texts>
+        </Text>
+      </text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>10</objects>
+  <objects>
+    <Block direction="H" style="$bs_tr">
+      <objects>
+        <Block direction="V" style="$bs_td">
+          <objects>
+            <Paragraph style="$ps_50c">
+              <text>
+                <Text texts="□□□□□□□□□□□□" style="$s_normal"/>
+              </text>
+            </Paragraph>
+            <Paragraph style="$ps_50c">
+              <text>
+                <Text texts="　「約物の、（幅と間隔）」" style="$s_normal"/>
+              </text>
+            </Paragraph>
+            <Paragraph style="$ps_50c">
+              <text>
+                <Text style="$s_normal">
+                  <texts><Text><texts>ゴシックGothic</texts><style><TStyle font="$f_gh"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>明朝Minchou</texts><style><TStyle font="$f_mt"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>ゴシックHankaku</texts><style><TStyle font="$f_g"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>明朝Hankaku</texts><style><TStyle font="$f_m"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>色文字</texts><style><TStyle shapestyle="$ss_red"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>下線</texts><style><TStyle withline="1"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>下破線</texts><style><TStyle withline="1" withlinestyle="$ss_dash"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>圏点</texts><style><TStyle withdot="1"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>網掛け</texts><style><TStyle withbox="f" withboxstyle="$ss_gray" shapestyle="$ss_white"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>日本語斜体</texts><style><TStyle slant="1"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts>添え字</texts>
+                  <texts><Text><texts>1）</texts><style><TStyle suffix="u"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>文字位置</texts><style><TStyle ruby="もじいち"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>楽</texts><style><TStyle ruby="たの"/></style></Text></texts>
+                  <texts>しい</texts>
+                  <texts><Text><texts>休暇</texts><style><TStyle ruby="バケーション"/></style></Text></texts>
+                  <texts>。</texts>
+                  <texts><Text><texts>大親分</texts><style><TStyle ruby="ボス"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>大親分</texts><style><TStyle ruby="boss"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>fifteen</texts><style><TStyle ruby="フィフティーン"/></style></Text></texts>
+                </Text>
+              </text>
+            </Paragraph>
+          </objects>
+        </Block>
+        <Block direction="R" style="$bs_td">
+          <objects>
+            <Paragraph style="$ps_50v">
+              <text>
+                <Text texts="□□□□□□□□□□□□" style="$s_normalv"/>
+              </text>
+            </Paragraph>
+            <Paragraph style="$ps_50v">
+              <text>
+                <Text texts="　「約物の、（幅と間隔）」" style="$s_normalv"/>
+              </text>
+            </Paragraph>
+            <Paragraph style="$ps_50v">
+              <text>
+                <Text style="$s_normalv">
+                  <texts><Text><texts>ゴシックGothic</texts><style><TStyle font="$f_ghv"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>明朝Minchou</texts><style><TStyle font="$f_mtv"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>ゴシックHankaku</texts><style><TStyle font="$f_gv"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>明朝Hankaku</texts><style><TStyle font="$f_mv"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>色文字</texts><style><TStyle shapestyle="$ss_red"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>傍線</texts><style><TStyle withline="1"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>傍破線</texts><style><TStyle withline="1" withlinestyle="$ss_dash"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>圏点</texts><style><TStyle withdot="1"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>網掛け</texts><style><TStyle withbox="f" withboxstyle="$ss_gray" shapestyle="$ss_white"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>日本語斜体</texts><style><TStyle slant="1"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>(1)</texts><style><TStyle vh="1"/></style></Text></texts>
+                  <texts>縦中横</texts>
+                  <texts> </texts>
+                  <texts>添え</texts>
+                  <texts><Text><texts>字</texts><style><TStyle><withnote><Text><texts>（</texts><texts><Text><texts>1</texts><style><TStyle vh="1"/></style></Text></texts><texts>）</texts><style><TStyle font="$f_ghv" fontsize="12.5"/></style></Text></withnote></TStyle></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>文字位置</texts><style><TStyle ruby="もじいち"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>楽</texts><style><TStyle ruby="たの"/></style></Text></texts>
+                  <texts>しい</texts>
+                  <texts><Text><texts>休暇</texts><style><TStyle ruby="バケーション"/></style></Text></texts>
+                  <texts>。</texts>
+                  <texts><Text><texts>大親分</texts><style><TStyle ruby="ボス"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>大親分</texts><style><TStyle ruby="boss"/></style></Text></texts>
+                  <texts> </texts>
+                  <texts><Text><texts>fifteen</texts><style><TStyle ruby="フィフティーン"/></style></Text></texts>
+                </Text>
+              </text>
+            </Paragraph>
+          </objects>
+        </Block>
+      </objects>
+    </Block>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<new_page setvar="$page"/>
+
+<new_image setvar="$img1" src="frame.jpg" pxwidth="20" pxheight="20" width="25" height="25"/>
+<Shape setvar="$shp1">
+  <call>
+    <ellipse x="0" y="0" xr="50" yr="25" spec="sf" arcarea="0" style="$ss_red"/>
+  </call>
+</Shape>
+<Shape setvar="$shp2" style="$ss_red">
+  <call>
+    <box x="0" y="0" w="25" h="25" spec="sr4">
+      <call>
+        <obj>
+          <obj>
+            <Text texts="Ａ">
+              <style><TStyle font="$f_m" fontsize="21"/></style>
+            </Text>
+          </obj>
+          <showargs>2</showargs>
+          <showargs>2</showargs>
+          <showargs>bl</showargs>
+        </obj>
+      </call>
+    </box>
+  </call>
+</Shape>
+
+<Block direction="V" style="$bs_frame">
+  <objects>
+    <Paragraph style="$ps_40">
+      <text>
+        <Text style="$s_bigtitle">
+          <texts><Outline title="図形と画像のデモ"/>図形と画像のデモ</texts>
+        </Text>
+      </text>
+    </Paragraph>
+  </objects>
+  <objects>$sp_hr</objects>
+  <objects>10</objects>
+  <objects>
+    <Block direction="V" style="$bs_td">
+      <objects>
+        <Paragraph style="$ps_50c">
+          <text>
+            <Text style="$s_normal">
+              <texts>テキスト中の画像</texts>
+              <texts>$img1</texts>
+              <texts>、テキスト中の図形</texts>
+              <texts>
+                <Text texts="$shp1"><style><TStyle objalign="m"/></style></Text>
+              </texts>
+              <texts>、テキスト中の図形中のテキスト</texts>
+              <texts>$shp2</texts>
+            </Text>
+          </text>
+        </Paragraph>
+      </objects>
+    </Block>
+  </objects>
+  <call>
+    <show page="$page" x="20" y="20" align="bl"/>
+  </call>
+</Block>
+
+<print file="demox.pdf"/>
+</XPDFJ>

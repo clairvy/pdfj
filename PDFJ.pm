@@ -21,6 +21,24 @@ BEGIN {
 	bytes->import unless $@;
 }
 
+# use hash in place of phash for Perl 5.9 or later
+BEGIN {
+	my $body;
+	unless ($] > 5.009) {
+		$body = sub { [ @_ ] };
+	} else {
+		$body = sub {
+			my($pos) = @_;
+			my $hash;
+			foreach my $k (keys(%$pos)) {
+				$hash->{$k} = $_[$pos->{$k}];
+			}
+			return $hash;
+		};
+	}
+	eval { sub _hash { $body->(@_) } };
+}
+
 @EXFUNC = qw(
 	PDFJ::Doc::Doc
 	PDFJ::TextStyle::TStyle PDFJ::Text::Text 
@@ -3201,8 +3219,8 @@ sub _fold {
 			$preskip = $lineskip;
 		}
 		push @lines, 
-			[\%TextLineIndex, $start, $count, $shift, $fixedglues, $preaols, 
-			$postaols, $preskip];
+			PDFJ::_hash(\%TextLineIndex, $start, $count, $shift, $fixedglues,
+				$preaols, $postaols, $preskip);
 		$start = $nextpos;
 	}
 	@lines;
@@ -4322,8 +4340,7 @@ my %ChunkIndex = (
 
 sub new {
 	my($class, @args) = @_;
-	unshift @args, \%ChunkIndex;
-	bless \@args, $class;
+	bless PDFJ::_hash(\%ChunkIndex, @args), $class;
 }
 
 sub clone {
